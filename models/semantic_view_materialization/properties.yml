@@ -5,4 +5,9 @@ models:
     config:
       materialized: table
       schema: gold
+      
+  - name: semantic_view
+    config:
+      materialized: table
+      schema: gold
 
