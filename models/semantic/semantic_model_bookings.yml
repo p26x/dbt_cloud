@@ -39,6 +39,7 @@ semantic_models:
         agg: sum
         expr: booking_amount
 
+
 metrics:
   - name: sum_of_booking_amt
     type: simple
@@ -47,6 +48,17 @@ metrics:
       measure:
         name: booking_amount
 
+
+saved_queries:
+  - name: total_sum_of_bookings
+    description: Total booking amount
+    query_params:
+      metrics:
+        - sum_of_booking_amt
+    exports:
+      - name: total_sum_of_booking_metrics
+        config:
+          export_as: table
 
 
 
