@@ -51,6 +51,18 @@ models:
       ephemeral:
         +materialized: ephemeral
 
+  dbt_artifacts:
+    +database: dev
+    +schema: audit
+    
+on-run-start:
+  - "{{ dbt_artifacts.upload_results(run_results) }}"
+
+on-run-end:
+  - "{{ dbt_artifacts.upload_results(run_results) }}"
+
+  
+
 seeds:
   dbt_cloud:
     country_codes:  #exaclty same as per file name (excluding .csv)
@@ -63,4 +75,6 @@ seeds:
 
 tests:
   +store_failures: true
+
+
 

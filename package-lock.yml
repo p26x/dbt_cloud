@@ -8,7 +8,10 @@ packages:
   - name: dbt_semantic_view
     package: Snowflake-Labs/dbt_semantic_view
     version: 1.0.3
+  - name: dbt_artifacts
+    package: brooklyn-data/dbt_artifacts
+    version: 2.10.0
   - name: dbt_date
     package: godatadriven/dbt_date
     version: 0.17.1
-sha1_hash: 02182e0007353252e8b011812161621b4477f0df
+sha1_hash: 62dbd15cea8823d5aa054e7c702e4738c3c338bb
