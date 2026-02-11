@@ -39,6 +39,11 @@ semantic_models:
         agg: sum
         expr: booking_amount
 
+      - name: booking_amount_avg
+        description: "Booking amount avg"
+        agg: average
+        expr: booking_amount
+
 
 metrics:
   - name: sum_of_booking_amt
@@ -48,17 +53,31 @@ metrics:
       measure:
         name: booking_amount
 
+  - name: avg_of_booking_amt
+    type: simple
+    label: avg of booking amount
+    type_params:
+      measure:
+        name: booking_amount_avg
+
 
 saved_queries:
-  - name: total_sum_of_bookings
+  - name: bookings_sv_metrics
     description: Total booking amount
+    #config:
+    #  cache:
+    #    enabled: false | true # not required because declerative caching will automatically cache without hint
     query_params:
       metrics:
         - sum_of_booking_amt
+        - avg_of_booking_amt
     exports:
       - name: total_sum_of_booking_metrics
         config:
           export_as: table
+          schema: metrics
+
+
 
 
 

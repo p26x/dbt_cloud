@@ -9,8 +9,8 @@ models:
         tests:
           - booking_amount_min:   # generic data-test 
               arguments:
-                warn_if: "<=1000"
-                error_if: ">=3000"
+                warn_if: "<=10000"
+                error_if: ">=30000"
           - not_null:
               arguments:
                 severity : warn
