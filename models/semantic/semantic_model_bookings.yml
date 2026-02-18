@@ -74,7 +74,7 @@ saved_queries:
       group_by:
         - Entity('booking_id')
         - Dimension('booking_id__booking_status')  #PrimaryEntityname__DimensionName
-        - TimeDimension('booking__booking_date','day')  
+        - TimeDimension('booking_id__booking_date','day')  
     exports:
       - name: total_sum_of_booking_metrics
         config:
