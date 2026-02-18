@@ -73,8 +73,11 @@ saved_queries:
         - avg_of_booking_amt
       group_by:
         - Entity('booking_id')
+        - TimeDimension('metric_time','day')
         - Dimension('booking_id__booking_status')  #PrimaryEntityname__DimensionName
-        - TimeDimension('booking_id__booking_date','day')  
+        - TimeDimension('booking_id__booking_date','day')
+      time_dimensions:
+        - dimension: Dimension('booking__booking_date')  
     exports:
       - name: total_sum_of_booking_metrics
         config:
