@@ -76,7 +76,7 @@ saved_queries:
       group_by:
         - TimeDimension('booking_id__booking_date','day')
         - TimeDimension('booking_id__booking_created_at', 'day')
-        - TimeDimension('metric_time', 'day')
+        # - TimeDimension('metric_time', 'day')
         - Dimension('booking_id__booking_status')  #PrimaryEntityname__DimensionName
         - Entity('listing')
         - Entity('booking_id')
