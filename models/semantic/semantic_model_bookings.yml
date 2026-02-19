@@ -1,3 +1,4 @@
+
 semantic_models:
   - name: booking
     model: ref('silver_bookings')
@@ -10,9 +11,11 @@ semantic_models:
       - name: booking_id
         type: primary
         expr: booking_id
+
       - name: listing
         type: foreign
-        expr: booking_lisitng_id
+        # IMPORTANT: fix the column name to your actual column in silver_bookings
+        expr: booking_listing_id
 
     dimensions:
       - name: booking_date
@@ -34,6 +37,12 @@ semantic_models:
       - name: booking_status
         type: categorical
         expr: booking_status
+
+      # DEBUG: This helps you confirm the date column is coming through to Power BI
+      # If this appears but booking_date doesn't, it's a time-dimension typing/casting issue.
+      - name: booking_date_cat
+        type: categorical
+        expr: booking_date
 
     measures:
       - name: booking_amount
@@ -65,31 +74,34 @@ metrics:
 
 saved_queries:
   - name: bookings_sv_metrics
-    description: Total booking amount
+    description: "Booking metrics grouped by booking date + status"
     config:
       cache:
-        enabled:  true #| false # not required because declerative caching will automatically cache without hint
+        enabled: true
+
     query_params:
       metrics:
         - sum_of_booking_amt
         - avg_of_booking_amt
+
       group_by:
-        - TimeDimension('booking_id__booking_date','day')
-        # - TimeDimension('booking_id__booking_created_at', 'day')
-        # - TimeDimension('metric_time', 'day')
-        - Dimension('booking_id__booking_status')  #PrimaryEntityname__DimensionName
-        - Entity('listing')
+        # Use semantic model scope for time dimensions (most common working path)
+        - TimeDimension('booking_id__booking_date', 'day')
+
+        # Keep business slice
+        - Dimension('booking_id__booking_status')
+
+        # Optional: include the booking_id key as a column (remove if grain becomes too big)
         - Entity('booking_id')
 
-              
+        # DEBUG: categorical date (should definitely show up in Power BI)
+        - Dimension('booking__booking_date_cat')
+
+        # Optional: listing entity (only keep if you need it)
+        - Entity('listing')
+
     exports:
       - name: total_sum_of_booking_metrics
         config:
           export_as: table
           schema: metrics
-
-
-
-
-
-
