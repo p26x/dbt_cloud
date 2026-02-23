@@ -63,9 +63,9 @@ metrics:
     label: d1 booking change
     expr: current_day_booking_amt - one_day_ago_booking_amt
     input_metrics:
-      - name: booking_amount
+      - name: sum_of_booking_amount
         alias: current_day_booking_amt
-      - name: booking_amount
+      - name: sum_of_booking_amount
         offset_window: 1 days
         alias: one_day_ago_booking_amt
 
