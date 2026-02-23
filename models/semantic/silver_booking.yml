@@ -42,4 +42,16 @@ models:
         type: simple
         agg: sum
         expr: booking_amount
+
+      - name: count_of_bookings
+        type: simple
+        agg: count
+        expr: booking_amount
+
+# advanced metrics under top-level metrics key
+metrics:
+  - name: booking_ratio
+    type: ratio
+    numerator: sum_of_booking_amount
+    denominator: count_of_bookings
       
