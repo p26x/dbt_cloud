@@ -49,13 +49,15 @@ models:
         agg: count
         expr: booking_amount
 
+      - name: booking_rate
+        type: ratio
+        agg: sum
+        numerator: sum_of_booking_amount
+        denominator: count_of_bookings
+
+
 # advanced metrics under top-level metrics key
 metrics:
-  - name: booking_ratio
-    type: ratio
-    numerator: sum_of_booking_amount
-    denominator: count_of_bookings
-
 #Derived metric current day - yesterday to track running sales
   - name: lag_booking_amt
     description: Difference between bookings now and 1 day ago
@@ -69,4 +71,21 @@ metrics:
         offset_window: 1 days
         alias: one_day_ago_booking_amt
 
+
+#  grain_to_date: month
+#1. Monthly Grain-to-Date (MTD)
+# Logic: It sums data from the 1st day of the current month up to the current day.
+#Behavior: On the 2nd of the month, it only shows 2 days of data. On the 30th, it shows 30 days.
+
+
+# Window: 30 days
+#2. Window of 1 Month (Rolling 30 Days)
+#Logic: It sums data from today back to the same date last month (e.g., Feb 24 back to Jan 24).
+#Behavior: The size of the "bucket" stays roughly the same every day. It never "resets" to zero.
       
+
+#Setting,Logic,Real-World Use Case
+#sum,Adds every daily value together,Total Revenue (MTD)
+#average,Means the daily values,Avg Daily Bookings
+#last,Takes the most recent value,Current Inventory
+#min / max,Takes the lowest/highest value,Peak Daily Sales
