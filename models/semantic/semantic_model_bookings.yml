@@ -66,3 +66,32 @@ metrics:
       measure:
         name: booking_amount_avg
 
+
+saved_queries:
+  - name: bookings_sv_metrics
+    description: Total booking amount
+    config:
+      cache:
+        enabled:  true #| false # not required because declerative caching will automatically cache without hint
+    query_params:
+      metrics:
+        - sum_of_booking_amt
+        - avg_of_booking_amt
+      group_by:
+        - TimeDimension('booking_id__booking_date','day')
+        - TimeDimension('booking_id__booking_created_at', 'day')
+        # - TimeDimension('metric_time', 'day')
+        - Dimension('booking_id__booking_status')  #PrimaryEntityname__DimensionName
+        - Dimension('booking_id__booking_date_cat')
+        - Entity('listing')
+        - Entity('booking_id')
+
+              
+    exports:
+      - name: total_sum_of_booking_metrics
+        config:
+          export_as: table
+          schema: metrics
+
+
+ 
