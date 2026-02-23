@@ -17,27 +17,13 @@ semantic_models:
     dimensions:
       - name: booking_date
         type: time
-        expr: to_date(booking_date)
-        type_params:
-          time_granularity: day
-        config:
-          meta:
-            metricflow:
-              primary_time: true
-
-      - name: booking_created_at
-        type: time
-        expr: to_date(booking_created_at)
+        expr: booking_date
         type_params:
           time_granularity: day
 
       - name: booking_status
         type: categorical
         expr: booking_status
-
-      - name: booking_date_cat
-        type: categorical
-        expr: to_date(booking_date)
 
     measures:
       - name: booking_amount
@@ -49,49 +35,32 @@ semantic_models:
         description: "Booking amount avg"
         agg: average
         expr: booking_amount
-
-
+    
 metrics:
-  - name: sum_of_booking_amt
+  - name: daily_booking_amount
     type: simple
     label: sum of booking amount
-    type_params:
-      measure:
-        name: booking_amount
+    measure: booking_amount
+    time_granularity: day
 
-  - name: avg_of_booking_amt
+  - name: monthly_booking_amount
     type: simple
-    label: avg of booking amount
-    type_params:
-      measure:
-        name: booking_amount_avg
+    label: sum of booking amount
+    measure: booking_amount
+    time_granularity: month
 
+  - name: quaterly_booking_amount
+    type: simple
+    label: sum of booking amount
+    measure: booking_amount
+    time_granularity: quarter
 
-saved_queries:
-  - name: bookings_sv_metrics
-    description: Total booking amount
-    config:
-      cache:
-        enabled:  true #| false # not required because declerative caching will automatically cache without hint
-    query_params:
-      metrics:
-        - sum_of_booking_amt
-        - avg_of_booking_amt
-      group_by:
-        - TimeDimension('booking_id__booking_date','day')
-        - TimeDimension('booking_id__booking_created_at', 'day')
-        # - TimeDimension('metric_time', 'day')
-        - Dimension('booking_id__booking_status')  #PrimaryEntityname__DimensionName
-        - Dimension('booking_id__booking_date_cat')
-        - Entity('listing')
-        - Entity('booking_id')
+  - name: yearly_booking_amount
+    type: simple
+    label: sum of booking amount
+    measure: booking_amount
+    time_granularity: year
 
-              
-    exports:
-      - name: total_sum_of_booking_metrics
-        config:
-          export_as: table
-          schema: metrics
 
 
 
