@@ -38,6 +38,7 @@ models:
           type: categorical
 
     metrics:
+#Simple Metrics
       - name: sum_of_booking_amount
         type: simple
         agg: sum
@@ -54,4 +55,18 @@ metrics:
     type: ratio
     numerator: sum_of_booking_amount
     denominator: count_of_bookings
+
+#Derived metric current day - yesterday to track running sales
+  - name: lag_booking_amt
+    description: Difference between bookings now and 1 day ago
+    type: derived
+    label: d1 booking change
+    expr: current_day_booking_amt - one_day_ago_booking_amt
+    input_metrics:
+      - name: booking_amount
+        alias: current_day_booking_amt
+      - name: booking_amount
+        offset_window: 1 days
+        alias: one_day_ago_booking_amt
+
       
