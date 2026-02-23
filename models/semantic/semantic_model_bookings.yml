@@ -17,13 +17,27 @@ semantic_models:
     dimensions:
       - name: booking_date
         type: time
-        expr: booking_date
+        expr: to_date(booking_date)
+        type_params:
+          time_granularity: day
+        config:
+          meta:
+            metricflow:
+              primary_time: true
+
+      - name: booking_created_at
+        type: time
+        expr: to_date(booking_created_at)
         type_params:
           time_granularity: day
 
       - name: booking_status
         type: categorical
         expr: booking_status
+
+      - name: booking_date_cat
+        type: categorical
+        expr: to_date(booking_date)
 
     measures:
       - name: booking_amount
@@ -35,35 +49,20 @@ semantic_models:
         description: "Booking amount avg"
         agg: average
         expr: booking_amount
-    
+
+
 metrics:
-  - name: daily_booking_amount
+  - name: sum_of_booking_amt
     type: simple
     label: sum of booking amount
-    measure: booking_amount
-    time_granularity: day
+    type_params:
+      measure:
+        name: booking_amount
 
-  - name: monthly_booking_amount
+  - name: avg_of_booking_amt
     type: simple
-    label: sum of booking amount
-    measure: booking_amount
-    time_granularity: month
-
-  - name: quaterly_booking_amount
-    type: simple
-    label: sum of booking amount
-    measure: booking_amount
-    time_granularity: quarter
-
-  - name: yearly_booking_amount
-    type: simple
-    label: sum of booking amount
-    measure: booking_amount
-    time_granularity: year
-
-
-
-
-
-
+    label: avg of booking amount
+    type_params:
+      measure:
+        name: booking_amount_avg
 
