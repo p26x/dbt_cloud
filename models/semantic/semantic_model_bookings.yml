@@ -1,0 +1,97 @@
+semantic_models:
+  - name: booking
+    model: ref('silver_bookings')
+    description: "Booking fact table at the transaction level. Contains booking dates, amounts, fees, and status."
+
+    defaults:
+      agg_time_dimension: booking_date
+
+    entities:
+      - name: booking_id
+        type: primary
+        expr: booking_id
+      - name: listing
+        type: foreign
+        expr: booking_lisitng_id
+
+    dimensions:
+      - name: booking_date
+        type: time
+        expr: to_date(booking_date)
+        type_params:
+          time_granularity: day
+        config:
+          meta:
+            metricflow:
+              primary_time: true
+
+      - name: booking_created_at
+        type: time
+        expr: to_date(booking_created_at)
+        type_params:
+          time_granularity: day
+
+      - name: booking_status
+        type: categorical
+        expr: booking_status
+
+      - name: booking_date_cat
+        type: categorical
+        expr: to_date(booking_date)
+
+    measures:
+      - name: booking_amount
+        description: "Booking amount without fees."
+        agg: sum
+        expr: booking_amount
+
+      - name: booking_amount_avg
+        description: "Booking amount avg"
+        agg: average
+        expr: booking_amount
+
+
+metrics:
+  - name: sum_of_booking_amt
+    type: simple
+    label: sum of booking amount
+    type_params:
+      measure:
+        name: booking_amount
+
+  - name: avg_of_booking_amt
+    type: simple
+    label: avg of booking amount
+    type_params:
+      measure:
+        name: booking_amount_avg
+
+
+saved_queries:
+  - name: bookings_sv_metrics
+    description: Total booking amount
+    config:
+      cache:
+        enabled:  true #| false # not required because declerative caching will automatically cache without hint
+    query_params:
+      metrics:
+        - sum_of_booking_amt
+        - avg_of_booking_amt
+      group_by:
+        - TimeDimension('booking_id__booking_date','day')
+        - TimeDimension('booking_id__booking_created_at', 'day')
+        # - TimeDimension('metric_time', 'day')
+        - Dimension('booking_id__booking_status')  #PrimaryEntityname__DimensionName
+        - Dimension('booking_id__booking_date_cat')
+        - Entity('listing')
+        - Entity('booking_id')
+
+              
+    exports:
+      - name: total_sum_of_booking_metrics
+        config:
+          export_as: table
+          schema: metrics
+
+
+ 
