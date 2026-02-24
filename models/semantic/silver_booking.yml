@@ -186,6 +186,18 @@ models:
          {{ Entity('listingid') }} =28
          and {{ Entity('listinghostid')}} =186
 
+      - name: count_of_listings_apartment_group 
+        type: derived
+        expr: lisitng_id_cnt
+        input_metrics:
+          - name : count_of_listings
+            alias: lisitng_id_cnt
+        filter: | 
+          {{ Metric('count_of_bookings', group_by=['listingid']) }} > 15
+
+
+
+
         # taking other models metrics and calculating with this model metric (we can define explicity also avg_booking_amt_per_listing)
       - name: avg_booking_amt_per_listing_inside
         description: average booking aount per lisitng
@@ -249,3 +261,9 @@ metrics:
 #last,Takes the most recent value,Current Inventory
 #min / max,Takes the lowest/highest value,Peak Daily Sales
 
+
+
+#1. Filter group_by vs. Query group_by
+#The group_by inside your YAML (filter): This only tells dbt the logic it should use to decide which rows to keep. 
+#It's like a subquery. It calculates: "Which listingids have > 11 bookings?"
+#The Query group_by (Command Line): This tells dbt the structure of the table you want to see.
