@@ -20,7 +20,7 @@ models:
           type: primary
       - name: booking_lisitng_id
         entity: 
-          name: bookinglisitngid
+          name: listingid       # this name must be same when joining 2 models 
           type: foreign
     #Time Dimensions
       - name: booking_date
@@ -98,8 +98,80 @@ models:
         input_metric: sum_of_booking_amount
         grain_to_date: day
 
-# advanced metrics under top-level metrics key
+  - name: silver_listings
+    description: "Consolidated model property file"
+    config:
+      materialized: table
+      schema: silver
+
+    # The semantic model lives right here inside the model entry
+    semantic_model:
+      enabled: true
+    agg_time_dimension: listing_created_at
+    
+    columns:
+    #Entities
+      - name : listing_id
+        entity: 
+          name: listingid           # this name must be same when joining 2 models
+          type: primary
+      - name: listing_host_id
+        entity: 
+          name: listinghostid
+          type: foreign
+    #Time Dimensions
+      - name: listing_created_at
+        granularity: day
+        dimension:
+          type: time
+      
+    #Categorical 
+      - name: property_type
+        dimension:
+          type: categorical
+
+      - name: room_type
+        dimension:
+          type: categorical
+
+      - name: city
+        dimension:
+          type: categorical
+
+      - name: country
+        dimension:
+          type: categorical
+
+      - name: price_rateing
+        dimension:
+          type: categorical
+
+    metrics:
+#Simple Metrics
+      - name: count_of_listings
+        type: simple
+        agg: count
+        expr: listing_id
+
+####### below is taking metric from 2 models and creating a metrics
+
 metrics:
+  - name: avg_booking_amt_per_listing
+    description: average booking aount per lisitng
+    type: derived
+    label: avg booking amt per listing
+    expr: sum_of_total_booking_amt / total_listings
+    input_metrics:
+      - name: sum_of_booking_amount
+        alias: sum_of_total_booking_amt
+      - name: count_of_listings
+        alias: total_listings
+
+
+
+
+# advanced metrics under top-level metrics key
+#metrics:
 #Derived metric current day - yesterday to track running sales
   - name: lag_booking_amt
     description: Difference between bookings now and 1 day ago

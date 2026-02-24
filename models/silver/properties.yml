@@ -1,10 +1,6 @@
 models:
  
 # we can define this configuration alos in schema.yml
-  - name: silver_listings
-    config:
-      materialized: table
-      schema: silver
  
   - name: silver_hosts
     config:
