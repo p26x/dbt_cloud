@@ -197,7 +197,6 @@ models:
 
 
 
-
         # taking other models metrics and calculating with this model metric (we can define explicity also avg_booking_amt_per_listing)
       - name: avg_booking_amt_per_listing_inside
         description: average booking aount per lisitng
