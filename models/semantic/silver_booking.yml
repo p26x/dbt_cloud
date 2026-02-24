@@ -115,7 +115,7 @@ models:
         entity: 
           name: listingid           # this name must be same when joining 2 models
           type: primary
-      - name: listing_host_id
+      - name: lisitng_host_id
         entity: 
           name: listinghostid
           type: foreign
@@ -153,6 +153,52 @@ models:
         agg: count
         expr: listing_id
 
+      - name: count_of_listings_apartment
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Dimension('listingid__property_type') }} ='Apartment' 
+
+      - name: count_of_listings_apartment_in_specific_city
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Dimension('listingid__property_type') }} ='Apartment'
+         AND {{ Dimension('listingid__city') }} LIKE '%Jamesview%'
+
+      - name: count_of_listings_apartment_in_specific_city_year
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Dimension('listingid__property_type') }} ='Apartment'
+         and {{ Dimension('listingid__property_type') }} is not null
+         and {{ TimeDimension('listingid__listing_created_at', 'month') }} >= '1999-01-01'
+      #and {{ TimeDimension('listingid__listing_created_at', 'day') }} >= '1999-01-01'
+         
+      - name: count_of_listings_apartment_in_specific_id
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Entity('listingid') }} =28
+         and {{ Entity('listinghostid')}} =186
+
+        # taking other models metrics and calculating with this model metric (we can define explicity also avg_booking_amt_per_listing)
+      - name: avg_booking_amt_per_listing_inside
+        description: average booking aount per lisitng
+        type: derived
+        label: avg booking amt per listing inside
+        expr: sum_of_total_booking_amt_inside / total_listings_inside
+        input_metrics:
+          - name: sum_of_booking_amount
+            alias: sum_of_total_booking_amt_inside
+          - name: count_of_listings
+            alias: total_listings_inside
+
+
 ####### below is taking metric from 2 models and creating a metrics
 
 metrics:
@@ -166,7 +212,6 @@ metrics:
         alias: sum_of_total_booking_amt
       - name: count_of_listings
         alias: total_listings
-
 
 
 
