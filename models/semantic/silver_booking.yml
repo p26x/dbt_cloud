@@ -93,6 +93,11 @@ models:
         input_metric: sum_of_booking_amount
         grain_to_date: quarter
 
+      - name: weekly_booking_amount
+        type: cumulative
+        input_metric: sum_of_booking_amount
+        grain_to_date: week
+
       - name: day_booking_amount
         type: cumulative
         input_metric: sum_of_booking_amount
