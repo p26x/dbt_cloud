@@ -41,9 +41,12 @@ models:
           type: time
       
     #Categorical 
+#Note: Case also we cant define in directly in dimension it should define in model level
       - name: booking_status
         dimension:
           type: categorical
+
+
 
     metrics:
 #Simple Metrics
@@ -56,6 +59,12 @@ models:
         type: simple
         agg: count
         expr: booking_amount
+
+
+      - name: distinct_count_of_bookings
+        type: simple
+        agg: count_distinct
+        expr: booking_id
 
       - name: booking_rate
         type: ratio
