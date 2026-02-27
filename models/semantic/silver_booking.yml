@@ -40,6 +40,22 @@ models:
         dimension:
           type: time
 
+      - name: extract(year from booking_date)
+        dimension:
+          name: booking_date_year
+          type: categorical
+
+      - name: extract(month from booking_date)
+        dimension:
+          name: booking_date_month
+          type: categorical
+
+
+      - name: extract(day from booking_date)
+        dimension:
+          name: booking_date_day
+          type: categorical
+
       
     #Categorical 
 #Note: Case also we cant define in directly in dimension it should define in model level
@@ -47,10 +63,6 @@ models:
         dimension:
           type: categorical
 
-      - name: booking_date_year
-        dimension:
-          name: to_char(booking_date,'yyyy')
-          type: categorical
 
 
 
