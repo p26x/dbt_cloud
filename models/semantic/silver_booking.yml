@@ -39,12 +39,18 @@ models:
         granularity: day
         dimension:
           type: time
+
       
     #Categorical 
 #Note: Case also we cant define in directly in dimension it should define in model level
       - name: booking_status
         dimension:
           type: categorical
+
+      - name: booking_year_label
+        dimension:
+          name: TO_CHAR(booking_date, 'YYYY')
+          type: categorical  
 
 
 
@@ -119,6 +125,30 @@ models:
         input_metric: sum_of_booking_amount
         grain_to_date: day
 
+#lag
+      - name: revenue_mtd_cumulative_lag 
+        type: derived
+        expr: month_lag
+        input_metrics:
+          - name : revenue_mtd_cumulative
+            alias: month_lag
+            offset_window: 1 month  # lag 
+
+
+
+      - name: monthly_growth_pct 
+        type: derived
+        expr: ((current_month - prev_month )/ prev_month) * 100
+        input_metrics:
+          - name : revenue_mtd_cumulative
+            alias: current_month
+
+          - name : revenue_mtd_cumulative
+            alias: prev_month
+            offset_window: 1 month  # lag 
+
+
+#Parameter	offset_window: 1 month (lag)	offset_window: -1 month (lead)
 
 
 
@@ -304,3 +334,46 @@ metrics:
 #2. It solves "Join Ambiguity"
 #If your model has multiple dates (e.g., booking_date, created_at, updated_at), and you ask for a "Weekly Total," dbt won't know which date to use for the weekly reset.
 #Setting primary_time: true tells dbt: "When in doubt, use this column to aggregate my numbers."
+
+
+saved_queries:
+  - name: current_day_orders
+    query_params:
+      metrics:
+        - sum_of_booking_amount
+      group_by:
+        - "Dimension('booking_id__booking_status')"
+      where:
+        - "{{ Dimensions('booking_id__booking_date','DAY') }} = now()"
+    exports:
+      - name: current_day_orders
+        config:
+          export_as: table
+          schema: gold
+  - name: current_day_orders_2
+    query_params:
+      metrics:
+        - sum_of_booking_amount
+      group_by:
+        - "Dimension('booking_id__booking_status')"
+      where:
+        - "{{ Dimensions('booking_id__booking_date','DAY') }} = now()"
+    exports:
+      - name: current_day_orders_2
+        config:
+          export_as: table
+          schema: gold
+
+  - name: mon_on_mon_pct
+    query_params:
+      metrics:
+        - monthly_growth_pct
+        - revenue_mtd_cumulative
+        - revenue_mtd_cumulative_lag
+      group_by:
+        - "Dimension('metric_time__year,metric_time__month')"
+    exports:
+      - name: mon_on_mon_pct
+        config:
+          export_as: table
+          schema: gold
