@@ -47,11 +47,6 @@ models:
         dimension:
           type: categorical
 
-      - name: booking_year_label
-        dimension:
-          name: TO_CHAR(booking_date, 'YYYY')
-          type: categorical  
-
 
 
     metrics:
