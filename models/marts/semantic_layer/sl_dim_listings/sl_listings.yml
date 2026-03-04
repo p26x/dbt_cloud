@@ -6,7 +6,7 @@ models:
     description: "listings dimensions and metrics"
     config:
       access: private
-      group: data_engineer  # The model now belongs to this group
+      group: data_engineer | data_analysts  # The model now belongs to this group
 
     # The semantic model lives right here inside the model entry
     semantic_model:
