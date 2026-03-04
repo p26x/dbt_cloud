@@ -62,4 +62,6 @@ models:
         type: simple
         agg: count_distinct
         expr: listing_id
+        config:
+          enabled: false
 
