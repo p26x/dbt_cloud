@@ -1,1 +1,4 @@
-SELECT * FROM {{ ref('silver_bookings') }}
+SELECT A.HOST_ID,COUNT(B.BOOKING_ID)
+FROM {{ ref('dim_hosts') }} AS A LEFT OUTER JOIN {{ref('fact_bookings')}}  AS B
+ON A.HOST_ID=B.HOST_ID
+GROUP BY A.HOST_ID HAVING COUNT(B.BOOKING_ID)=0

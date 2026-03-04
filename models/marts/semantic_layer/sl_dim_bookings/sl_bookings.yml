@@ -1,0 +1,103 @@
+version: 2
+ 
+models:
+  - name: sl_bookings
+    description: "Consolidated model property file"
+    config:
+      access: public
+      meta: 
+        owner: chakka.venkatahithesh@movate.com
+
+    # The semantic model lives right here inside the model entry
+    semantic_model:
+      enabled: true
+      config:
+        meta:
+          owner: chakka.venkatahithesh@movate.com
+
+    agg_time_dimension: booking_date
+   
+    columns:
+    #Entities
+      - name : booking_id
+        entity:
+          name: bookingid
+          type: primary
+
+#Time Dimensions
+#Note: You cant add cast or date convertions in new semantic layer you should add it in sql model itself
+      - name: booking_date  
+        granularity: day
+        dimension:
+          type: time
+        config:
+          meta:
+            metricflow:
+#this is the configuration we are telling the model to use as primary time, in group by we are using
+#group-by --booking_date__year instead of this we can use group-by --metric_time__year
+              primary_time: true    
+             
+      - name: booking_created_at
+        granularity: day
+        dimension:
+          type: time
+ 
+      - name: extract(year from booking_date)
+        dimension:
+          name: booking_date_year
+          type: categorical
+ 
+      - name: extract(month from booking_date)
+        dimension:
+          name: booking_date_month
+          type: categorical
+ 
+ 
+      - name: extract(day from booking_date)
+        dimension:
+          name: booking_date_day
+          type: categorical
+
+#Categorical
+#Note: Case also we cant define in directly in dimension it should define in model level
+      - name: booking_status
+        dimension:
+          type: categorical
+
+    metrics:
+#Simple Metrics
+      - name: count_of_bookings
+        type: simple
+        agg: count_distinct
+        expr: booking_id
+        config: 
+          meta:
+            enabled: false
+
+
+      - name: count_of_booking_confirmed
+        type: simple
+        agg: count
+        expr: booking_id
+        filter: |
+         {{ Dimension('bookingid__booking_status') }} ='confirmed'
+        config: 
+          meta:
+            enabled: false
+
+
+      - name: count_of_booking_cancelled
+        type: simple
+        agg: count
+        expr: booking_id
+        filter: |
+         {{ Dimension('bookingid__booking_status') }} ='cancelled'
+        config: 
+          meta:
+            status: certified
+            enabled: true
+            certified_by: "Lead Data Architect"
+            certified_on: "2026-03-04"
+            certificate_verifying_user: "your_user_id" 
+            owner: chakka.venkatahithesh@movate.com
+

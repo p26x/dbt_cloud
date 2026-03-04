@@ -1,26 +1,26 @@
 version: 2
-
+ 
 models:
   - name: silver_bookings
     description: "Consolidated model property file"
     config:
       materialized: table
       schema: silver
-
+ 
     # The semantic model lives right here inside the model entry
     semantic_model:
       enabled: true
     agg_time_dimension: booking_date
-    
+   
     columns:
     #Entities
       - name : booking_id
-        entity: 
+        entity:
           name: bookingid
           type: primary
       - name: booking_lisitng_id
-        entity: 
-          name: listingid       # this name must be same when joining 2 models 
+        entity:
+          name: listingid       # this name must be same when joining 2 models
           type: foreign
     #Time Dimensions
 #Note: You cant add cast or date convertions in new semantic layer you should add it in sql model itself
@@ -31,73 +31,73 @@ models:
         config:
           meta:
             metricflow:
-#this is the configuration we are telling the model to use as primary time, in group by we are using 
+#this is the configuration we are telling the model to use as primary time, in group by we are using
 #group-by --booking_date__year instead of this we can use group-by --metric_time__year
               primary_time: true    
-              
+             
       - name: booking_created_at
         granularity: day
         dimension:
           type: time
-
+ 
       - name: extract(year from booking_date)
         dimension:
           name: booking_date_year
           type: categorical
-
+ 
       - name: extract(month from booking_date)
         dimension:
           name: booking_date_month
           type: categorical
-
-
+ 
+ 
       - name: extract(day from booking_date)
         dimension:
           name: booking_date_day
           type: categorical
-
-      
-    #Categorical 
+ 
+     
+    #Categorical
 #Note: Case also we cant define in directly in dimension it should define in model level
       - name: booking_status
         dimension:
           type: categorical
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
     metrics:
 #Simple Metrics
       - name: sum_of_booking_amount
         type: simple
         agg: sum
         expr: booking_amount
-
+ 
       - name: count_of_bookings
         type: simple
         agg: count
         expr: booking_amount
-
-
+ 
+ 
       - name: distinct_count_of_bookings
         type: simple
         agg: count_distinct
         expr: booking_id
-
+ 
       - name: booking_rate
         type: ratio
         agg: sum
         numerator: sum_of_booking_amount
         denominator: count_of_bookings
-
+ 
       - name: revenue_p95
         type: simple
         agg: percentile
         expr: booking_amount
         percentile: 0.95            # 0.95 percent, it will give the booking amount from 1 to 95, Bookings 96, 97, 98, 99, and 100: These people paid more than $3,192. The very last person (the 100th) might have paid $10,000!
         percentile_type: discrete   # discrite: will give round off value
-      
+     
       # to get top 5 sum of discrite we need to write saved query booking > revenue_p95
      
       # For this we need to write saved query to tell group by
@@ -117,74 +117,74 @@ models:
         #window: 30 days
         grain_to_date: month
         #period_agg: last
-
+ 
       - name: yearly_booking_amount
         type: cumulative
         input_metric: sum_of_booking_amount
         grain_to_date: year
-
+ 
       - name: quater_booking_amount
         type: cumulative
         input_metric: sum_of_booking_amount
         grain_to_date: quarter
-
+ 
       - name: weekly_booking_amount
         type: cumulative
         input_metric: sum_of_booking_amount
         grain_to_date: week
-
+ 
       - name: day_booking_amount
         type: cumulative
         input_metric: sum_of_booking_amount
         grain_to_date: day
-
+ 
 #lag
-      - name: revenue_mtd_cumulative_lag 
+      - name: revenue_mtd_cumulative_lag
         type: derived
         expr: month_lag
         input_metrics:
           - name : revenue_mtd_cumulative
             alias: month_lag
-            offset_window: 1 month  # lag 
-
-
-
-      - name: monthly_growth_pct 
+            offset_window: 1 month  # lag
+ 
+ 
+ 
+      - name: monthly_growth_pct
         type: derived
         expr: ((current_month - prev_month )/ prev_month) * 100
         input_metrics:
           - name : revenue_mtd_cumulative
             alias: current_month
-
+ 
           - name : revenue_mtd_cumulative
             alias: prev_month
-            offset_window: 1 month  # lag 
-
-
-#Parameter	offset_window: 1 month (lag)	offset_window: -1 month (lead)
-
-
-
-
+            offset_window: 1 month  # lag
+ 
+ 
+#Parameter  offset_window: 1 month (lag)  offset_window: -1 month (lead)
+ 
+ 
+ 
+ 
   - name: silver_listings
     description: "Consolidated model property file"
     config:
       materialized: table
       schema: silver
-
+ 
     # The semantic model lives right here inside the model entry
     semantic_model:
       enabled: true
     agg_time_dimension: listing_created_at
-    
+   
     columns:
     #Entities
       - name : listing_id
-        entity: 
+        entity:
           name: listingid           # this name must be same when joining 2 models
           type: primary
       - name: lisitng_host_id
-        entity: 
+        entity:
           name: listinghostid
           type: foreign
     #Time Dimensions
@@ -192,42 +192,42 @@ models:
         granularity: day
         dimension:
           type: time
-      
-    #Categorical 
+     
+    #Categorical
       - name: property_type
         dimension:
           type: categorical
-
+ 
       - name: room_type
         dimension:
           type: categorical
-
+ 
       - name: city
         dimension:
           type: categorical
-
+ 
       - name: country
         dimension:
           type: categorical
-
+ 
       - name: price_rateing
         dimension:
           type: categorical
-
+ 
     metrics:
 #Simple Metrics
       - name: count_of_listings
         type: simple
         agg: count
         expr: listing_id
-
+ 
       - name: count_of_listings_apartment
         type: simple
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid__property_type') }} ='Apartment' 
-
+         {{ Dimension('listingid__property_type') }} ='Apartment'
+ 
       - name: count_of_listings_apartment_in_specific_city
         type: simple
         agg: count
@@ -235,7 +235,7 @@ models:
         filter: |
          {{ Dimension('listingid__property_type') }} ='Apartment'
          AND {{ Dimension('listingid__city') }} LIKE '%Jamesview%'
-
+ 
       - name: count_of_listings_apartment_in_specific_city_year
         type: simple
         agg: count
@@ -253,17 +253,17 @@ models:
         filter: |
          {{ Entity('listingid') }} =28
          and {{ Entity('listinghostid')}} =186
-
-      - name: count_of_listings_apartment_group 
+ 
+      - name: count_of_listings_apartment_group
         type: derived
         expr: lisitng_id_cnt
         input_metrics:
           - name : count_of_listings
             alias: lisitng_id_cnt
-        filter: | 
+        filter: |
           {{ Metric('count_of_bookings', group_by=['listingid']) }} > 15
-
-
+ 
+ 
         # taking other models metrics and calculating with this model metric (we can define explicity also avg_booking_amt_per_listing)
       - name: avg_booking_amt_per_listing_inside
         description: average booking aount per lisitng
@@ -275,10 +275,10 @@ models:
             alias: sum_of_total_booking_amt_inside
           - name: count_of_listings
             alias: total_listings_inside
-
-
+ 
+ 
 ####### below is taking metric from 2 models and creating a metrics
-
+ 
 metrics:
   - name: avg_booking_amt_per_listing
     description: average booking aount per lisitng
@@ -290,9 +290,9 @@ metrics:
         alias: sum_of_total_booking_amt
       - name: count_of_listings
         alias: total_listings
-
-
-
+ 
+ 
+ 
 # advanced metrics under top-level metrics key
 #metrics:
 #Derived metric current day - yesterday to track running sales
@@ -307,36 +307,36 @@ metrics:
       - name: sum_of_booking_amount
         offset_window: 1 days
         alias: one_day_ago_booking_amt
-
-
+ 
+ 
 #  grain_to_date: month
 #1. Monthly Grain-to-Date (MTD)
 # Logic: It sums data from the 1st day of the current month up to the current day.
 #Behavior: On the 2nd of the month, it only shows 2 days of data. On the 30th, it shows 30 days.
-
-
+ 
+ 
 # Window: 30 days
 #2. Window of 1 Month (Rolling 30 Days)
 #Logic: It sums data from today back to the same date last month (e.g., Feb 24 back to Jan 24).
 #Behavior: The size of the "bucket" stays roughly the same every day. It never "resets" to zero.
-      
-
+     
+ 
 #Setting,Logic,Real-World Use Case
 #sum,Adds every daily value together,Total Revenue (MTD)
 #average,Means the daily values,Avg Daily Bookings
 #last,Takes the most recent value,Current Inventory
 #min / max,Takes the lowest/highest value,Peak Daily Sales
-
-
-
+ 
+ 
+ 
 #1. Filter group_by vs. Query group_by
-#The group_by inside your YAML (filter): This only tells dbt the logic it should use to decide which rows to keep. 
+#The group_by inside your YAML (filter): This only tells dbt the logic it should use to decide which rows to keep.
 #It's like a subquery. It calculates: "Which listingids have > 11 bookings?"
 #The Query group_by (Command Line): This tells dbt the structure of the table you want to see.
-
-
+ 
+ 
 #metricflow
-#This configuration is the "Shortcut Key" for your time-based metrics. 
+#This configuration is the "Shortcut Key" for your time-based metrics.
 #By marking a specific dimension as primary_time: true,
 #you are telling the dbt Semantic Layer that this is the official timeline for this model.
 #1. It enables the metric_time shortcut
@@ -347,48 +347,47 @@ metrics:
 #2. It solves "Join Ambiguity"
 #If your model has multiple dates (e.g., booking_date, created_at, updated_at), and you ask for a "Weekly Total," dbt won't know which date to use for the weekly reset.
 #Setting primary_time: true tells dbt: "When in doubt, use this column to aggregate my numbers."
-
-saved_queries:
  
-  - name: current_day_orders
-    query_params:
-      metrics:
-        - sum_of_booking_amount
-      group_by:
-        - "Dimension('booking_id__booking_status')"
-      where:
-        - "{{ Dimensions('booking_id__booking_date','DAY') }} = now()"
-    exports:
-      - name: current_day_orders
-        config:
-          export_as: table
-          schema: gold
-  - name: current_day_orders_2
-    query_params:
-      metrics:
-        - sum_of_booking_amount
-      group_by:
-        - "Dimension('booking_id__booking_status')"
-      where:
-        - "{{ Dimensions('booking_id__booking_date','DAY') }} = now()"
-    exports:
-      - name: current_day_orders_2
-        config:
-          export_as: table
-          schema: gold
-          
-  - name: mon_on_mon_pct
-    query_params:
-      metrics:
-        - monthly_growth_pct
-        - revenue_mtd_cumulative
-        - revenue_mtd_cumulative_lag
-      group_by:
-        - TimeDimension('metric_time', 'year')
-        - TimeDimension('metric_time', 'month')
-    exports:
-      - name: fact_monthly_revenue_growth
-        config:
-          export_as: table
-          schema: gold
+#saved_queries:
  
+#  - name: current_day_orders
+#    query_params:
+#      metrics:
+#        - sum_of_booking_amount
+#      group_by:
+#        - "Dimension('booking_id__booking_status')"
+#      where:
+#        - "{{ Dimensions('booking_id__booking_date','DAY') }} = current_date()"
+#    exports:
+#      - name: current_day_orders
+#        config:
+#          export_as: table
+#          schema: gold
+#  - name: current_day_orders_2
+#    query_params:
+#      metrics:
+#        - sum_of_booking_amount
+#      group_by:
+#        - "Dimension('booking_id__booking_status')"
+#      where:
+#        - "{{ Dimensions('booking_id__booking_date','DAY') }} = current_date()"
+#    exports:
+#      - name: current_day_orders_2
+#        config:
+#          export_as: table
+#          schema: gold
+         
+#  - name: mon_on_mon_pct
+#    query_params:
+#      metrics:
+#        - monthly_growth_pct
+#        - revenue_mtd_cumulative
+#        - revenue_mtd_cumulative_lag
+#      group_by:
+#        - TimeDimension('metric_time', 'year')
+#        - TimeDimension('metric_time', 'month')
+#    exports:
+#      - name: fact_monthly_revenue_growth
+#        config:
+#          export_as: table
+#          schema: gold

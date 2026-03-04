@@ -1,0 +1,17 @@
+snapshots:
+  - name: dim_hosts
+    relation: ref('gold_hosts')
+    config:
+      target_database: dev
+      target_schema: gold
+      unique_key: host_id
+      strategy: check
+      check_cols: ['HOST_NAME','HOST_SINCE','IS_SUPERHOST','RESPONSE_RATE_QUALITY']
+      snapshot_meta_column_names:
+        dbt_valid_from: start_date
+        dbt_valid_to: end_date
+        dbt_updated_at: snapshot_timestamp
+        dbt_scd_id: row_hash_id
+      hard_deletes: invalidate
+      dbt_valid_to_current: "to_date('9999-12-31')"         
+
