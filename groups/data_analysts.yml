@@ -1,0 +1,15 @@
+version: 1
+
+groups:
+  - name: data_analysts
+    owner:
+      name: "Data Analysts Team"
+      email: "dataanalysts@movate.com"
+      config:
+        meta:
+          members: 
+            - name: "Hithesh"
+              email: "chakka.venkatahithesh@movate.com"
+
+            - name: "Hari"
+              email: "hariharan.jeyakumar@movate.com"

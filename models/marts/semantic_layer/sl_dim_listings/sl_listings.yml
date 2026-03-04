@@ -1,0 +1,65 @@
+version: 2
+
+ 
+models:
+  - name: sl_listings
+    description: "listings dimensions and metrics"
+    config:
+      access: private
+      group: data_engineer | data_analysts  # The model now belongs to this group
+
+    # The semantic model lives right here inside the model entry
+    semantic_model:
+      enabled: true
+    agg_time_dimension: listing_created_at
+   
+    columns:
+    #Entities
+      - name : listing_id
+        entity:
+          name: listingid
+          type: primary
+
+#Time Dimensions
+#Note: You cant add cast or date convertions in new semantic layer you should add it in sql model itself
+      - name: listing_created_at  
+        granularity: day
+        dimension:
+          type: time
+        config:
+          meta:
+            metricflow:
+#this is the configuration we are telling the model to use as primary time, in group by we are using
+#group-by --booking_date__year instead of this we can use group-by --metric_time__year
+              primary_time: true
+ 
+#Categorical
+#Note: Case also we cant define in directly in dimension it should define in model level
+      - name: property_type
+        dimension:
+          type: categorical
+
+      - name: room_type
+        dimension:
+          type: categorical
+
+      - name: city
+        dimension:
+          type: categorical
+
+      - name: country
+        dimension:
+          type: categorical
+
+      - name: price_rateing
+        dimension:
+          type: categorical
+
+
+    metrics:
+#Simple Metrics
+      - name: count_of_listings
+        type: simple
+        agg: count_distinct
+        expr: listing_id
+

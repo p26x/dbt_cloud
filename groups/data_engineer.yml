@@ -1,0 +1,18 @@
+version: 1
+
+groups:
+  - name: data_engineer
+    owner:
+      name: "Data Engineer Team / Gautham / Sai / Harsha"  # if we had multiple owners
+      email: "dataengineer@movate.com, gautham.periyasamy@movate.com, tarigopula.saibharath@movate.com, harsha.srinivas@movate.com"
+      config:
+        meta:
+          members: 
+            - name: "Gautham"
+              email: "gautham.periyasamy@movate.com"
+
+            - name: "Sai Bharath"
+              email: "tarigopula.saibharath@movate.com"
+
+            - name: "Harsha"
+              email: "harsha.srinivas@movate.com"

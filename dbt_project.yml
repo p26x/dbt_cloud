@@ -9,7 +9,7 @@ config-version: 2
 profile: 'default'
 
 
-model-paths: ["models"]
+model-paths: ["models","groups"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
 seed-paths: ["seeds"]
@@ -47,15 +47,15 @@ models:
         +materialized: ephemeral
 
 
-  dbt_artifacts:
-    +database: dev
-    +schema: audit
+#  dbt_artifacts:
+#    +database: dev
+#    +schema: audit
 
-on-run-start:
-  - "{{ dbt_artifacts.upload_results(run_results) }}"
+#on-run-start:
+#  - "{{ dbt_artifacts.upload_results(run_results) }}"
 
-on-run-end:
-  - "{{ dbt_artifacts.upload_results(run_results) }}"
+#on-run-end:
+#  - "{{ dbt_artifacts.upload_results(run_results) }}"
 
 seeds:
   dbt_cloud:

@@ -1,0 +1,6 @@
+seeds:
+  - name: country_codes
+    config: 
+      quote_columns: false #quote_columns tells dbt weather to put double quotes around column names when creating the table in your database
+      column_types: {country_code: string,country_name: string}
+      delimiter: ','

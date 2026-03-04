@@ -1,0 +1,18 @@
+version: 1
+
+groups:
+  - name: leads
+    owner:
+      name: "Leads Team"
+      email: "leads@movate.com"
+      config:
+        meta:
+          members: 
+            - name: "Umesh"
+              email: "umesh.bhatt@movate.com"
+
+            - name: "Renu"
+              email: "renugopal.dasarathan@movate.com"
+
+            - name: "Abhinash"
+              email: "abinash.mohanty@movate.com"
