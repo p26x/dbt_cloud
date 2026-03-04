@@ -8,7 +8,7 @@ models:
  
     # The semantic model lives right here inside the model entry
     semantic_model:
-      enabled: true
+      enabled: false
     agg_time_dimension: host_created_at
    
     columns:
