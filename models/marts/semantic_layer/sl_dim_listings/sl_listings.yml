@@ -1,10 +1,5 @@
 version: 2
 
-groups:
-  - name: data_engineer
-    owner:
-      name: "Data Engineer Team"
-      email: "chakka.venkatahithesh@movate.com"
  
 models:
   - name: sl_listings

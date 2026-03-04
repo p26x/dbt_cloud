@@ -1,0 +1,15 @@
+version: 1
+
+groups:
+  - name: data_engineer
+    owner:
+      name: "Data Engineer Team"
+      email: "dataengineer@movate.com"
+      config:
+        meta:
+          members: 
+            - name: "Venkata Hithesh"
+              email: "chakka.venkatahithesh@movate.com"
+
+            - name: "Venkata Hithesh"
+              email: "chakka.venkatahithesh@movate.com"
