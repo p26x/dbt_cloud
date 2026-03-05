@@ -86,6 +86,8 @@ models:
           enabled: false
 
 # Left outer join to sl_fact_booking to get hosts with 0 count 
+# dbt sl query --metrics bookings_per_host_inclusive --group-by hostid --where "{{ Metric('bookings_per_host_inclusive',group_by=['hostid']) }} =0"
+
       - name: bookings_per_host_inclusive
         type: derived
         expr: coalesce(cnt_of_bkm_amt,0)
