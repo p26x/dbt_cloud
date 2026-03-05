@@ -43,7 +43,13 @@ models:
         expr: host_id
         filter: |
          {{ Dimension('hostid__is_superhost') }} ='TRUE'
+        config:
+          enabled: true
 
+      - name: sum_of_booking_amt
+        type: simple
+        agg: sum
+        expr: total_booking_amount
         config:
           enabled: true
 
