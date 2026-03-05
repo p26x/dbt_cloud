@@ -57,7 +57,6 @@ models:
         type: simple
         agg: count_distinct
         expr: booking_id
-        fill_nulls_with: 0
         config:
           enabled: true
 
