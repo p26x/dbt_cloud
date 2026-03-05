@@ -91,7 +91,6 @@ models:
         input_metrics:
           - name: count_of_booking_id_against_host
             alias: cnt_of_bkm_amt
-          - name: count_of_hosts
         config:
           enabled: true
 
