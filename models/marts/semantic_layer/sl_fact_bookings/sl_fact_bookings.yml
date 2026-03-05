@@ -56,7 +56,7 @@ models:
       - name: count_of_booking_id_against_host
         type: simple
         agg: count_distinct
-        expr: host_id
+        expr: booking_id
         config:
           enabled: true
 
