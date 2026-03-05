@@ -11,14 +11,14 @@ models:
     # The semantic model lives right here inside the model entry
     semantic_model:
       enabled: true
-    agg_time_dimension: bookingid__booking_date  # date column should be inportant to calculate timeseries
+    agg_time_dimension: time_snapshot  # date column should be inportant to calculate timeseries
    
     columns:
     #Entities
       - name : booking_id
         entity:
           name: bookingid
-          type: foreign
+          type: primary
 
       - name : lisitng_id
         entity:
@@ -29,6 +29,11 @@ models:
         entity:
           name: hostid
           type: foreign
+
+      - name: time_snapshot  
+        granularity: day
+        dimension:
+          type: time
 
     metrics:
 #Simple Metrics
