@@ -87,9 +87,10 @@ models:
 
       - name: bookings_per_host_inclusive
         type: derived
-        expr: coalesce(count_of_booking_id_against_host,0)
+        expr: coalesce(cnt_of_bkm_amt,0)
         input_metrics:
           - name: count_of_booking_id_against_host
+            alias: cnt_of_bkm_amt
           - name: count_of_hosts
         config:
           enabled: false
