@@ -8,7 +8,7 @@ models:
  
     # The semantic model lives right here inside the model entry
     semantic_model:
-      enabled: false
+      enabled: true
     agg_time_dimension: host_created_at
    
     columns:
@@ -53,7 +53,7 @@ models:
         agg: count_distinct
         expr: host_id
         config:
-          enabled: false
+          enabled: true
 
 
       - name: count_of_very_good_hosts
@@ -84,3 +84,18 @@ models:
          {{ Dimension('hostid__response_rate_quality') }} ='GOOD'
         config:
           enabled: false
+
+# Left outer join to sl_fact_booking to get hosts with 0 count 
+# dbt sl query --metrics bookings_per_host_inclusive --group-by hostid --where "{{ Metric('bookings_per_host_inclusive',group_by=['hostid']) }} =0"
+
+      - name: bookings_per_host_inclusive
+        type: derived
+        expr: coalesce(cnt_of_bkm_amt,0)
+        input_metrics:
+          - name: count_of_booking_id_against_host
+            alias: cnt_of_bkm_amt
+          - name: count_of_hosts  # We need a metric on the Host side to force the join to start from the Host table.
+        config:
+          enabled: true
+
+

@@ -2,4 +2,5 @@
     materialized='view'
 ) }}
 
-select * from {{ ref('fact_bookings') }}
+select *, current_date() as time_snapshot 
+from {{ ref('fact_bookings') }}

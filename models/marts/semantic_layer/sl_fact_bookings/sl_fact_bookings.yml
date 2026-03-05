@@ -11,14 +11,14 @@ models:
     # The semantic model lives right here inside the model entry
     semantic_model:
       enabled: true
-    agg_time_dimension: bookingid__booking_date  # date column should be inportant to calculate timeseries
+    agg_time_dimension: time_snapshot  # date column should be inportant to calculate timeseries
    
     columns:
     #Entities
       - name : booking_id
         entity:
           name: bookingid
-          type: foreign
+          type: primary
 
       - name : lisitng_id
         entity:
@@ -30,6 +30,11 @@ models:
           name: hostid
           type: foreign
 
+      - name: time_snapshot  
+        granularity: day
+        dimension:
+          type: time
+
     metrics:
 #Simple Metrics
       - name: count_of_superhost_facts
@@ -38,7 +43,21 @@ models:
         expr: host_id
         filter: |
          {{ Dimension('hostid__is_superhost') }} ='TRUE'
+        config:
+          enabled: true
 
+      - name: sum_of_booking_amt
+        type: simple
+        agg: sum
+        expr: total_booking_amount
+        config:
+          enabled: true
+
+      - name: count_of_booking_id_against_host
+        type: simple
+        agg: count_distinct
+        expr: booking_id
+        fill_nulls_with: 0
         config:
           enabled: true
 
