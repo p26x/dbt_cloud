@@ -1,0 +1,44 @@
+version: 2
+
+ 
+models:
+  - name: sl_fact_bookings
+    description: "Facts Model will link all dim models"
+    config:
+      access: public
+      group: data_engineer | data_analysts  # The model now belongs to this group
+
+    # The semantic model lives right here inside the model entry
+    semantic_model:
+      enabled: true
+    agg_time_dimension: bookingid__booking_date  # date column should be inportant to calculate timeseries
+   
+    columns:
+    #Entities
+      - name : booking_id
+        entity:
+          name: bookingid
+          type: foreign
+
+      - name : lisitng_id
+        entity:
+          name: listingid
+          type: foreign
+
+      - name : host_id
+        entity:
+          name: hostid
+          type: foreign
+
+    metrics:
+#Simple Metrics
+      - name: count_of_superhost_facts
+        type: simple
+        agg: count_distinct
+        expr: host_id
+        filter: |
+         {{ Dimension('hostid__is_superhost') }} ='TRUE'
+
+        config:
+          enabled: true
+
