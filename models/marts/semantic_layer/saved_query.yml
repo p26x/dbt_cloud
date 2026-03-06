@@ -6,7 +6,7 @@ saved_queries:
         - sum_of_booking_amt
       group_by:
         - "Dimension('bookingid__booking_status')"
-        - "Dimension('bookingid__booking_date','YEAR')"
+        - "Dimension('bookingid__booking_date_year')"
     exports:
       - name: yearly_booking_amount
         config:
