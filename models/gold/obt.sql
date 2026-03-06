@@ -45,7 +45,7 @@ FROM
     {% else %}
        OR {{ con['where_condition'] }}
     {% endif %}
-    {% if loop.last %}){% endif %}
+    {% if loop.last %} ) {% endif %}
 {% endfor %}
 
 
