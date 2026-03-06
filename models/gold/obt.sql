@@ -41,10 +41,11 @@ FROM
 
 {% for con in configs%}
     {% if loop.first %}
-       WHERE {{ con['where_condition'] }}
+       WHERE ( {{ con['where_condition'] }}
     {% else %}
        OR {{ con['where_condition'] }}
     {% endif %}
+    {% if loop.last %}){% endif %}
 {% endfor %}
 
 

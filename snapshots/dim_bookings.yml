@@ -13,4 +13,4 @@ snapshots:
         dbt_updated_at: snapshot_timestamp
         dbt_scd_id: row_hash_id
       hard_deletes: invalidate
-      dbt_valid_to_current: "to_date('9999-12-31')"
+      #dbt_valid_to_current: "to_date('9999-12-31')"  # Due to this when SCD-2 happening its not updating records end date automatically
