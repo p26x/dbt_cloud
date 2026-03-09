@@ -88,7 +88,7 @@ models:
         label: "Count of Bookings Cancelled"
         description: "Count of bookings were cancelled"
         type: simple
-        agg: count
+        agg: coun
         expr: booking_id
         filter: |
          {{ Dimension('bookingid__booking_status') }} ='cancelled'
@@ -100,4 +100,3 @@ models:
             certified_on: "2026-03-04"
             certificate_verifying_user: "your_user_id" 
             owner: chakka.venkatahithesh@movate.com
-
