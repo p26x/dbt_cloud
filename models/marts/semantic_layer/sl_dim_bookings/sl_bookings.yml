@@ -88,7 +88,7 @@ models:
         label: "Count of Bookings Cancelled"
         description: "Count of bookings were cancelled"
         type: simple
-        agg: coun
+        agg: count
         expr: booking_id
         filter: |
          {{ Dimension('bookingid__booking_status') }} ='cancelled'
