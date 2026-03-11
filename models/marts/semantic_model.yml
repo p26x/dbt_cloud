@@ -272,6 +272,21 @@ models:
           - name: count_of_listings_silver
             alias: total_listings_inside
 
+#Parent Metrics
+
+metrics:
+  - name: avg_booking_amt_per_listing_silver
+    description: average booking aount per lisitng
+    type: derived
+    label: avg booking amt per listing
+    expr: sum_of_total_booking_amt / total_listings
+    input_metrics:
+      - name: sum_of_booking_amount_silver
+        alias: sum_of_total_booking_amt
+      - name: count_of_listings_silver
+        alias: total_listings
+
+
 saved_queries:
  
   - name: current_day_orders
