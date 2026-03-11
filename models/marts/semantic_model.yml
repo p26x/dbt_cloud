@@ -260,11 +260,9 @@ models:
           {{ Metric('count_of_bookings_silver', group_by=['listingid_silver']) }} > 15
  
  
-        # taking other models metrics and calculating with this model metric (we can define explicity also avg_booking_amt_per_listing)
       - name: avg_booking_amt_per_listing_inside_silver
         description: average booking aount per lisitng
         type: derived
-        label: avg booking amt per listing inside
         expr: sum_of_total_booking_amt_inside / total_listings_inside
         input_metrics:
           - name: sum_of_booking_amount_silver
