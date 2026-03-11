@@ -16,11 +16,11 @@ models:
     #Entities
       - name : booking_id
         entity:
-          name: bookingid
+          name: bookingid_1
           type: primary
       - name: booking_lisitng_id
         entity:
-          name: listingid       # this name must be same when joining 2 models
+          name: listingid_1       # this name must be same when joining 2 models
           type: foreign
     #Time Dimensions
 #Note: You cant add cast or date convertions in new semantic layer you should add it in sql model itself
@@ -181,7 +181,7 @@ models:
     #Entities
       - name : listing_id
         entity:
-          name: listingid           # this name must be same when joining 2 models
+          name: listingid_1           # this name must be same when joining 2 models
           type: primary
       - name: lisitng_host_id
         entity:
@@ -226,24 +226,24 @@ models:
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid__property_type') }} ='Apartment'
+         {{ Dimension('listingid_1__property_type') }} ='Apartment'
  
       - name: count_of_listings_apartment_in_specific_city
         type: simple
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid__property_type') }} ='Apartment'
-         AND {{ Dimension('listingid__city') }} LIKE '%Jamesview%'
+         {{ Dimension('listingid_1__property_type') }} ='Apartment'
+         AND {{ Dimension('listingid_1__city') }} LIKE '%Jamesview%'
  
       - name: count_of_listings_apartment_in_specific_city_year
         type: simple
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid__property_type') }} ='Apartment'
-         and {{ Dimension('listingid__property_type') }} is not null
-         and {{ TimeDimension('listingid__listing_created_at', 'month') }} >= '1999-01-01'
+         {{ Dimension('listingid_1__property_type') }} ='Apartment'
+         and {{ Dimension('listingid_1__property_type') }} is not null
+         and {{ TimeDimension('listingid_1__listing_created_at', 'month') }} >= '1999-01-01'
       #and {{ TimeDimension('listingid__listing_created_at', 'day') }} >= '1999-01-01'
          
       - name: count_of_listings_apartment_in_specific_id
@@ -251,7 +251,7 @@ models:
         agg: count
         expr: listing_id
         filter: |
-         {{ Entity('listingid') }} =28
+         {{ Entity('listingid_1') }} =28
          and {{ Entity('listinghostid')}} =186
  
       - name: count_of_listings_apartment_group
@@ -261,7 +261,7 @@ models:
           - name : count_of_listings_1
             alias: lisitng_id_cnt
         filter: |
-          {{ Metric('count_of_bookings_1', group_by=['listingid']) }} > 15
+          {{ Metric('count_of_bookings_1', group_by=['listingid_1']) }} > 15
  
  
         # taking other models metrics and calculating with this model metric (we can define explicity also avg_booking_amt_per_listing)
@@ -357,7 +357,7 @@ saved_queries:
       group_by:
         - "Dimension('booking_id__booking_status')"
       where:
-        - "{{ Dimensions('booking_id__booking_date','DAY') }} = current_date()"
+        - "{{ Dimensions('booking_id__booking_date',grain='day') }} = current_date()"
     exports:
       - name: current_day_orders
         config:
@@ -370,7 +370,7 @@ saved_queries:
       group_by:
         - "Dimension('booking_id__booking_status')"
       where:
-        - "{{ Dimensions('booking_id__booking_date','DAY') }} = current_date()"
+        - "{{ Dimensions('booking_id__booking_date',grain='day') }} = current_date()"
     exports:
       - name: current_day_orders_2
         config:
