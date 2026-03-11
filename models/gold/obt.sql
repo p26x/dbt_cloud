@@ -1,3 +1,6 @@
+{{config(materialized = 'incremental')}}
+
+
 {% set configs = [
     {
         "table":"DEV.SILVER.SILVER_BOOKINGS",

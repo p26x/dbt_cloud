@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: gold_hosts
+    config:
+      materialized: ephemeral
+    columns:
+      - name: host_name
+        description: "Hosts Name"
+        config:
+          meta:
+            contains_pii: true
+            pii_type: host_name
+      - name: user_id
+        description: "Internal non-PII identifier."
+        config:
+          meta:
+            contains_pii: false

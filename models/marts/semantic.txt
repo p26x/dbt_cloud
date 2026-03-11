@@ -16,11 +16,11 @@ models:
     #Entities
       - name : booking_id
         entity:
-          name: bookingid
+          name: bookingid_1
           type: primary
       - name: booking_lisitng_id
         entity:
-          name: listingid       # this name must be same when joining 2 models
+          name: listingid_1       # this name must be same when joining 2 models
           type: foreign
     #Time Dimensions
 #Note: You cant add cast or date convertions in new semantic layer you should add it in sql model itself
@@ -74,7 +74,7 @@ models:
         agg: sum
         expr: booking_amount
  
-      - name: count_of_bookings
+      - name: count_of_bookings_1
         type: simple
         agg: count
         expr: booking_amount
@@ -89,7 +89,7 @@ models:
         type: ratio
         agg: sum
         numerator: sum_of_booking_amount
-        denominator: count_of_bookings
+        denominator: count_of_bookings_1
  
       - name: revenue_p95
         type: simple
@@ -181,7 +181,7 @@ models:
     #Entities
       - name : listing_id
         entity:
-          name: listingid           # this name must be same when joining 2 models
+          name: listingid_1           # this name must be same when joining 2 models
           type: primary
       - name: lisitng_host_id
         entity:
@@ -216,7 +216,7 @@ models:
  
     metrics:
 #Simple Metrics
-      - name: count_of_listings
+      - name: count_of_listings_1
         type: simple
         agg: count
         expr: listing_id
@@ -226,24 +226,24 @@ models:
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid__property_type') }} ='Apartment'
+         {{ Dimension('listingid_1__property_type') }} ='Apartment'
  
       - name: count_of_listings_apartment_in_specific_city
         type: simple
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid__property_type') }} ='Apartment'
-         AND {{ Dimension('listingid__city') }} LIKE '%Jamesview%'
+         {{ Dimension('listingid_1__property_type') }} ='Apartment'
+         AND {{ Dimension('listingid_1__city') }} LIKE '%Jamesview%'
  
       - name: count_of_listings_apartment_in_specific_city_year
         type: simple
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid__property_type') }} ='Apartment'
-         and {{ Dimension('listingid__property_type') }} is not null
-         and {{ TimeDimension('listingid__listing_created_at', 'month') }} >= '1999-01-01'
+         {{ Dimension('listingid_1__property_type') }} ='Apartment'
+         and {{ Dimension('listingid_1__property_type') }} is not null
+         and {{ TimeDimension('listingid_1__listing_created_at', 'month') }} >= '1999-01-01'
       #and {{ TimeDimension('listingid__listing_created_at', 'day') }} >= '1999-01-01'
          
       - name: count_of_listings_apartment_in_specific_id
@@ -251,17 +251,17 @@ models:
         agg: count
         expr: listing_id
         filter: |
-         {{ Entity('listingid') }} =28
+         {{ Entity('listingid_1') }} =28
          and {{ Entity('listinghostid')}} =186
  
       - name: count_of_listings_apartment_group
         type: derived
         expr: lisitng_id_cnt
         input_metrics:
-          - name : count_of_listings
+          - name : count_of_listings_1
             alias: lisitng_id_cnt
         filter: |
-          {{ Metric('count_of_bookings', group_by=['listingid']) }} > 15
+          {{ Metric('count_of_bookings_1', group_by=['listingid_1']) }} > 15
  
  
         # taking other models metrics and calculating with this model metric (we can define explicity also avg_booking_amt_per_listing)
@@ -273,7 +273,7 @@ models:
         input_metrics:
           - name: sum_of_booking_amount
             alias: sum_of_total_booking_amt_inside
-          - name: count_of_listings
+          - name: count_of_listings_1
             alias: total_listings_inside
  
  
@@ -288,7 +288,7 @@ metrics:
     input_metrics:
       - name: sum_of_booking_amount
         alias: sum_of_total_booking_amt
-      - name: count_of_listings
+      - name: count_of_listings_1
         alias: total_listings
  
  
@@ -348,46 +348,46 @@ metrics:
 #If your model has multiple dates (e.g., booking_date, created_at, updated_at), and you ask for a "Weekly Total," dbt won't know which date to use for the weekly reset.
 #Setting primary_time: true tells dbt: "When in doubt, use this column to aggregate my numbers."
  
-#saved_queries:
+saved_queries:
  
-#  - name: current_day_orders
-#    query_params:
-#      metrics:
-#        - sum_of_booking_amount
-#      group_by:
-#        - "Dimension('booking_id__booking_status')"
-#      where:
-#        - "{{ Dimensions('booking_id__booking_date','DAY') }} = current_date()"
-#    exports:
-#      - name: current_day_orders
-#        config:
-#          export_as: table
-#          schema: gold
-#  - name: current_day_orders_2
-#    query_params:
-#      metrics:
-#        - sum_of_booking_amount
-#      group_by:
-#        - "Dimension('booking_id__booking_status')"
-#      where:
-#        - "{{ Dimensions('booking_id__booking_date','DAY') }} = current_date()"
-#    exports:
-#      - name: current_day_orders_2
-#        config:
-#          export_as: table
-#          schema: gold
+  - name: current_day_orders
+    query_params:
+      metrics:
+        - sum_of_booking_amount
+      group_by:
+        - "Dimension('booking_id__booking_status')"
+      where:
+        - "{{ Dimensions('booking_id__booking_date',grain='day') }} = current_date()"
+    exports:
+      - name: current_day_orders
+        config:
+          export_as: table
+          schema: gold
+  - name: current_day_orders_2
+    query_params:
+      metrics:
+        - sum_of_booking_amount
+      group_by:
+        - "Dimension('booking_id__booking_status')"
+      where:
+        - "{{ Dimensions('booking_id__booking_date',grain='day') }} = current_date()"
+    exports:
+      - name: current_day_orders_2
+        config:
+          export_as: table
+          schema: gold
          
-#  - name: mon_on_mon_pct
-#    query_params:
-#      metrics:
-#        - monthly_growth_pct
-#        - revenue_mtd_cumulative
-#        - revenue_mtd_cumulative_lag
-#      group_by:
-#        - TimeDimension('metric_time', 'year')
-#        - TimeDimension('metric_time', 'month')
-#    exports:
-#      - name: fact_monthly_revenue_growth
-#        config:
-#          export_as: table
-#          schema: gold
+  - name: mon_on_mon_pct
+    query_params:
+      metrics:
+        - monthly_growth_pct
+        - revenue_mtd_cumulative
+        - revenue_mtd_cumulative_lag
+      group_by:
+        - TimeDimension('metric_time', 'year')
+        - TimeDimension('metric_time', 'month')
+    exports:
+      - name: fact_monthly_revenue_growth
+        config:
+          export_as: table
+          schema: gold
