@@ -35,6 +35,8 @@ models:
     bronze:
       +materialized: view
       +schema: bronze
+      +docs:
+        node_color: "bronze"
 
     silver:
       +materialized: table

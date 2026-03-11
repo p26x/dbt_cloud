@@ -3,6 +3,8 @@ models:
     config:
       materialized: table
       schema: bronze
+      docs:
+        node_color: "#000000"  # it will generate the docs on the color we specified
       
     columns:
       - name: BOOKING_AMOUNT
