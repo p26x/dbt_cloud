@@ -136,7 +136,6 @@ saved_queries:
         - avg_of_booking_amt_staging
       group_by:
         - TimeDimension('metric_time', 'year')
-        - TimeDimension('bookingid_staging__booking_date', 'year')
         #- Dimension('bookingid_staging__booking_date_year')
         #- Dimension('bookingid_staging__booking_status_staging')
     exports:
