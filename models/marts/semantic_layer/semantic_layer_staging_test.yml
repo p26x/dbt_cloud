@@ -127,4 +127,4 @@ saved_queries:
       - name: yearly_pct_growth_table
         config:
           export_as: table
-          schema: staging
+          schema: gold
