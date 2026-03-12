@@ -85,7 +85,7 @@ saved_queries:
       metrics:
         - yearly_growth_pct_staging
       group_by:
-        - metric_time__year
+        - TimeDimension('metric_time', 'year')
     exports:
       - name: yearly_pct_growth_table
         config:
