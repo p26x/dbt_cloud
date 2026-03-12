@@ -67,6 +67,11 @@ models:
         type: simple
         agg: sum
         expr: booking_amount
+
+      - name: avg_of_booking_amt_staging
+        type: simple
+        agg: average
+        expr: booking_amount
       
       - name: day_wise_cummilative_count
         type: cumulative
@@ -114,6 +119,7 @@ saved_queries:
         - sum_of_booking_amt_staging
         - per_yearly_sum
         - yearly_growth_pct_staging
+        - avg_of_booking_amt_staging
       group_by:
         - TimeDimension('metric_time', 'year')
     exports:
