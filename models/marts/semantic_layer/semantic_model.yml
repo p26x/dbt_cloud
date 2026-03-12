@@ -291,9 +291,9 @@ saved_queries:
         - sum_of_booking_amount_silver
       group_by:
         - "Dimension('booking_id__booking_status_silver')"
-      where:
+      #where:
         #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} = now()"
-        - "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} <= current_date()"  #current_timestamp - interval '1 week'
+        #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} <= current_date()"  #current_timestamp - interval '1 week'
     exports:
       - name: current_day_orders
         config:
@@ -306,8 +306,8 @@ saved_queries:
         - sum_of_booking_amount_silver
       group_by:
         - "Dimension('bookingid_silver__booking_status_silver')"
-      where:
-        - "{{ TimeDimension('bookingid_silver__booking_date_silver','YEAR') }} <= current_year()"
+      #where:
+      #  - "{{ TimeDimension('bookingid_silver__booking_date_silver','YEAR') }} <= current_year()"
     exports:
       - name: current_year_orders
         config:
