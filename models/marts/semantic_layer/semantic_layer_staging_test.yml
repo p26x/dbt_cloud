@@ -60,11 +60,10 @@ models:
           name: booking_status_staging
           type: categorical
 
-      - name: to_char(booking_date,'YYYY')
+      - name: date_trunc('year',booking_date)
         dimension:
           name: year_booking_date
           type: categorical
-
 
     metrics:
       - name: sum_of_booking_amt_staging
