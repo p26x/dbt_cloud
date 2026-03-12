@@ -134,9 +134,10 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - extract(year from TimeDimension('bookingid_staging__booking_date_staging', 'year')) as report_year
+        - TimeDimension('bookingid_staging__booking_date_staging', 'year')
     exports:
       - name: yearly_pct_growth_table
         config:
           export_as: table
           schema: staging
+          alias: bookingid_staging__booking_date_staging_year: report_year
