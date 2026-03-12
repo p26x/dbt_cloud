@@ -9,7 +9,7 @@ models:
  
     semantic_model:
       enabled: true
-    agg_time_dimension: booking_date
+    agg_time_dimension: booking_date_silver
    
     columns:
       - name : booking_id
@@ -64,12 +64,12 @@ models:
       - name: sum_of_booking_amount_silver
         type: simple
         agg: sum
-        expr: booking_amount_silver
+        expr: booking_amount
  
       - name: count_of_bookings_silver
         type: simple
         agg: count
-        expr: booking_amount_silver
+        expr: booking_amount
  
  
       - name: distinct_count_of_bookings_silver
@@ -79,7 +79,6 @@ models:
  
       - name: booking_rate
         type: ratio
-        agg: sum
         numerator: sum_of_booking_amount_silver
         denominator: count_of_bookings_silver
  
@@ -152,7 +151,6 @@ models:
             alias: prev_month
             offset_window: 1 month  # lag
  
- 
 # 2nd model
 
  
@@ -165,7 +163,7 @@ models:
     # The semantic model lives right here inside the model entry
     semantic_model:
       enabled: true
-    agg_time_dimension: listing_created_at
+    agg_time_dimension: listing_created_at_silver
    
     columns:
     #Entities
@@ -222,26 +220,26 @@ models:
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid_silver__property_type') }} ='Apartment'
- 
+         {{ Dimension('listingid_silver__property_type_silver') }} ='Apartment'
+
       - name: count_of_listings_apartment_in_specific_city_silver
         type: simple
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid_silver__property_type') }} ='Apartment'
-         AND {{ Dimension('listingid_silver__city') }} LIKE '%Jamesview%'
+         {{ Dimension('listingid_silver__property_type_silver') }} ='Apartment'
+         AND {{ Dimension('listingid_silver__city_silver') }} LIKE '%Jamesview%'
  
       - name: count_of_listings_apartment_in_specific_city_year_silver
         type: simple
         agg: count
         expr: listing_id
         filter: |
-         {{ Dimension('listingid_silver__property_type') }} ='Apartment'
-         and {{ Dimension('listingid_silver__property_type') }} is not null
-         and {{ TimeDimension('listingid_silver__listing_created_at', 'month') }} >= '1999-01-01'
+         {{ Dimension('listingid_silver__property_type_silver') }} ='Apartment'
+         and {{ Dimension('listingid_silver__property_type_silver') }} is not null
+         and {{ TimeDimension('listingid_silver__listing_created_at_silver', 'month') }} >= '1999-01-01'
       #and {{ TimeDimension('listingid__listing_created_at', 'day') }} >= '1999-01-01'
-         
+
       - name: count_of_listings_apartment_in_specific_id_silver
         type: simple
         agg: count
@@ -255,7 +253,7 @@ models:
         expr: lisitng_id_cnt_silver
         input_metrics:
           - name : count_of_listings_silver
-            alias: lisitng_id_cnt
+            alias: lisitng_id_cnt_silver
         filter: |
           {{ Metric('count_of_bookings_silver', group_by=['listingid_silver']) }} > 15
  
@@ -330,8 +328,4 @@ saved_queries:
         config:
           export_as: table
           schema: gold
- 
- 
-
-
  

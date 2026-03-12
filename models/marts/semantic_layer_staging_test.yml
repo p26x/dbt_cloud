@@ -8,7 +8,7 @@ models:
 
     semantic_model:
       enabled: true
-    agg_time_dimension: booking_date
+    agg_time_dimension: booking_date_staging
    
     columns:
       - name : booking_id
@@ -30,7 +30,7 @@ models:
             metricflow:
               primary_time: true    
              
-      - name: booking_created_at
+      - name: created_at
         granularity: day
         dimension:
           name: booking_created_at_staging
@@ -43,8 +43,51 @@ models:
 
 
     metrics:
-#Simple Metrics
-      - name: sum_of_booking_amount_staging
+      - name: sum_of_booking_amt_staging
         type: simple
         agg: sum
         expr: booking_amount
+      
+      - name: day_wise_cummilative_count
+        type: cumulative
+        input_metric: sum_of_booking_amt_staging
+        grain_to_date: day
+
+# dbt sl query --metrics day_wise_cummilative_count --group-by metric_time__day
+       
+      - name: revenue_mtd_cumulative_staging
+        type: cumulative
+        input_metric: sum_of_booking_amt_staging
+        grain_to_date: year
+
+# dbt sl query --metrics revenue_mtd_cumulative_staging --group-by metric_time__month
+
+#Issue Encountered:-  Previously we get 0 because current month has 0 data, so caluclation didn't worked added coalesc to handel null values
+
+      - name: yearly_growth_pct_staging
+        type: derived
+        expr: ((coalesce(current_year,0) - coalesce(prev_year,0) )/ nullif(prev_year,0)) * 100
+        input_metrics:
+          - name : sum_of_booking_amt_staging
+            alias: current_year
+
+          - name : sum_of_booking_amt_staging
+            alias: prev_year
+            offset_window: 1 year  # lag
+
+# dbt sl query --metrics monthly_growth_pct_staging --group-by metric_time__year
+
+
+saved_queries:
+ 
+  - name: yearly_pct_cal
+    query_params:
+      metrics:
+        - yearly_growth_pct_staging
+      group_by:
+        - metric_time__year
+    exports:
+      - name: yearly_pct_growth_table
+        config:
+          export_as: table
+          schema: staging
