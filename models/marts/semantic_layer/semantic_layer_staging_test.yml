@@ -13,7 +13,7 @@ models:
 
     semantic_model:
       enabled: true
-    agg_time_dimension: booking_date_staging
+    agg_time_dimension: booking_date
    
     columns:
        # tests
@@ -45,7 +45,7 @@ models:
         #config:
         #  meta:
         #    metricflow:
-        #      primary_time: true
+        #      primary_time: true  #this configuration is telling model to refer this for metric time
              
       - name: created_at
         granularity: day
