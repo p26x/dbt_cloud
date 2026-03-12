@@ -1,16 +1,31 @@
 version: 2
  
 models:
-  - name: staging_booking
+  - name: bronze_bookings
     config:
-      materialized: view
-      schema: staging
+      materialized: table
+      schema: bronze
+      docs:
+        node_color: "#000000"  # it will generate the docs on the color we specified
+      
+
 
     semantic_model:
       enabled: true
     agg_time_dimension: booking_date_staging
    
     columns:
+       # tests
+      - name : BOOKING_AMOUNT
+        tests:
+          - booking_amount_min:
+              arguments:
+                warn_if: "<=10000"
+                error_if: ">=30000"
+          - not_null:
+              arguments:
+                severity : warn
+
       - name : booking_id
         entity:
           name: bookingid_staging
