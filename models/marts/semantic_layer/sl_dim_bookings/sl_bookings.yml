@@ -1,0 +1,9 @@
+version: 2
+ 
+models:
+  - name: sl_bookings
+    description: "Consolidated model property file"
+    config:
+      access: public
+      meta: 
+        owner: chakka.venkatahithesh@movate.com

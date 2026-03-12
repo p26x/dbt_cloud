@@ -1,0 +1,7 @@
+version: 2
+ 
+models:
+  - name: sl_hosts
+    description: "hosts dimensions and metrics"
+    config:
+      access: private #protected

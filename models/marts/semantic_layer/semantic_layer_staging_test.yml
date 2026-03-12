@@ -16,17 +16,6 @@ models:
     agg_time_dimension: booking_date
    
     columns:
-       # tests
-      - name : BOOKING_AMOUNT
-        tests:
-          - booking_amount_min:
-              arguments:
-                warn_if: "<=10000"
-                error_if: ">=30000"
-          - not_null:
-              arguments:
-                severity : warn
-
       - name : booking_id
         entity:
           name: bookingid_staging
