@@ -41,6 +41,7 @@ models:
         dimension:
           name: booking_date_staging
           type: time
+          label: "Booking Date"
         config:
           meta:
             metricflow:
