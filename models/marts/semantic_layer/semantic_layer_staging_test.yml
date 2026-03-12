@@ -42,7 +42,13 @@ models:
         dimension:
           name: booking_created_at_staging
           type: time
-
+      
+      - name: date_trunc('year', booking_date)
+        granularity: year
+        dimension:
+          name: booking_year_clean
+          type: time
+          
  
       - name: booking_status
         dimension:
@@ -120,7 +126,8 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - "TimeDimension('metric_time', 'year')"
+        - TimeDimension('bookingid_staging__booking_date', 'year')
+        #- "TimeDimension('metric_time', 'year')"
         #- Dimension('bookingid_staging__year_booking_date')
         #- Dimension('bookingid_staging__booking_status_staging')
     exports:
