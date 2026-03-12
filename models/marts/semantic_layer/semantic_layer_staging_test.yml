@@ -130,7 +130,7 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - TimeDimension('metric_time__year')
+        - Dimension('bookingid_staging__booking_date_staging').grain('year')
         - Dimension('bookingid_staging__booking_status_staging')
     exports:
       - name: yearly_pct_growth_table
