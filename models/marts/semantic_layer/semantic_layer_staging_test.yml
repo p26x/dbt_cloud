@@ -42,10 +42,10 @@ models:
           name: booking_date_staging
           type: time
           label: "Booking Date"
-        #config:
-        #  meta:
-        #    metricflow:
-        #      primary_time: true  #this configuration is telling model to refer this for metric time
+        config:
+          meta:
+            metricflow:
+              primary: true  #primary_time #this configuration is telling model to refer this for metric time
              
       - name: created_at
         granularity: day
@@ -130,7 +130,7 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - TimeDimension('metric_time', 'year')
+        - TimeDimension('metric_time__year')
         - Dimension('bookingid_staging__booking_status_staging')
     exports:
       - name: yearly_pct_growth_table
