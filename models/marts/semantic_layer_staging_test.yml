@@ -41,6 +41,11 @@ models:
           name: booking_status_staging
           type: categorical
 
+ 
+      - name: extract(year from booking_date)
+        dimension:
+          name: booking_date_year_silver
+          type: categorical
 
     metrics:
       - name: sum_of_booking_amt_staging
@@ -96,6 +101,7 @@ saved_queries:
         - yearly_growth_pct_staging
       group_by:
         - TimeDimension('metric_time', 'year')
+        - Dimension('bookingid_staging__booking_date_year_silver')
     exports:
       - name: yearly_pct_growth_table
         config:
