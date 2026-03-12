@@ -13,7 +13,7 @@ models:
 
     semantic_model:
       enabled: true
-    agg_time_dimension: booking_date
+    agg_time_dimension: booking_date_staging
    
     columns:
        # tests
@@ -42,11 +42,10 @@ models:
           name: booking_date_staging
           type: time
           label: "Booking Date"
-        config:
-          meta:
-            metricflow:
-              primary_time: true
-              is_primary: true    
+        #config:
+        #  meta:
+        #    metricflow:
+        #      primary_time: true
              
       - name: created_at
         granularity: day
