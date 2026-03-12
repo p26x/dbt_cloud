@@ -10,7 +10,7 @@ saved_queries:
         - sum_of_booking_amt
       group_by:
         - "Dimension('bookingid__booking_status')"
-        - "TimeDimension('bookingid__time_snapshot','year')"
+        - "TimeDimension('metric_time','year')"
     exports:
       - name: yearly_booking_amount 
         config:
