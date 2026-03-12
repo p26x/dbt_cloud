@@ -1,19 +1,19 @@
-#models:
-#  - name: bronze_bookings
-#    config:
-#      materialized: table
-#      schema: bronze
-#      docs:
-#        node_color: "#000000"  # it will generate the docs on the color we specified
-#      
-#    columns:
-#      - name: BOOKING_AMOUNT
-#        tests:
-#          - booking_amount_min:   # generic data-test 
-#              arguments:
-#                warn_if: "<=10000"
-#                error_if: ">=30000"
-#          - not_null:
-#              arguments:
-#                severity : warn
-#                #severity : warn #error
+models:
+  - name: bronze_bookings
+    config:
+      materialized: table
+      schema: bronze
+      docs:
+        node_color: "#000000"  # it will generate the docs on the color we specified
+      
+    columns:
+      - name: BOOKING_AMOUNT
+        tests:
+          - booking_amount_min:   # generic data-test 
+              arguments:
+                warn_if: "<=10000"
+                error_if: ">=30000"
+          - not_null:
+              arguments:
+                severity : warn
+                #severity : warn #error
