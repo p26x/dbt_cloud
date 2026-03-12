@@ -13,7 +13,7 @@ models:
 
     semantic_model:
       enabled: true
-    agg_time_dimension: booking_date
+    agg_time_dimension: booking_date_staging
    
     columns:
        # tests
@@ -58,11 +58,6 @@ models:
           name: booking_status_staging
           type: categorical
 
- 
-      - name: extract(year from booking_date)
-        dimension:
-          name: booking_date_year_silver
-          type: categorical
 
     metrics:
       - name: sum_of_booking_amt_staging
