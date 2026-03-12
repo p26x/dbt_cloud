@@ -283,49 +283,49 @@ metrics:
         alias: total_listings
 
 
-saved_queries:
+#saved_queries:
  
-  - name: current_day_orders
-    query_params:
-      metrics:
-        - sum_of_booking_amount_silver
-      group_by:
-        - "Dimension('booking_id__booking_status_silver')"
-      #where:
-        #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} = now()"
-        #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} <= current_date()"  #current_timestamp - interval '1 week'
-    exports:
-      - name: current_day_orders
-        config:
-          export_as: table
-          schema: gold
+#  - name: current_day_orders
+#    query_params:
+#      metrics:
+#        - sum_of_booking_amount_silver
+#      group_by:
+#        - "Dimension('booking_id__booking_status_silver')"
+#      #where:
+#        #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} = now()"
+#        #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} <= current_date()"  #current_timestamp - interval '1 week'
+#    exports:
+#      - name: current_day_orders
+#        config:
+#          export_as: table
+#          schema: gold
 
-  - name: current_year_orders
-    query_params:
-      metrics:
-        - sum_of_booking_amount_silver
-      group_by:
-        - "Dimension('bookingid_silver__booking_status_silver')"
-      #where:
-      #  - "{{ TimeDimension('bookingid_silver__booking_date_silver','YEAR') }} <= current_year()"
-    exports:
-      - name: current_year_orders
-        config:
-          export_as: table
-          schema: gold
+#  - name: current_year_orders
+#    query_params:
+#      metrics:
+#        - sum_of_booking_amount_silver
+#      group_by:
+#        - "Dimension('bookingid_silver__booking_status_silver')"
+#      #where:
+#      #  - "{{ TimeDimension('bookingid_silver__booking_date_silver','YEAR') }} <= current_year()"
+#    exports:
+#      - name: current_year_orders
+#        config:
+#          export_as: table
+#          schema: gold
 
-  - name: mon_on_mon_pct
-    query_params:
-      metrics:
-        - monthly_growth_pct_silver
-        - revenue_mtd_cumulative_silver
-        - revenue_mtd_cumulative_lag_silver
-      group_by:
-        - TimeDimension('metric_time', 'year')
-        - TimeDimension('metric_time', 'month')
-    exports:
-      - name: fact_monthly_revenue_growth
-        config:
-          export_as: table
-          schema: gold
+#  - name: mon_on_mon_pct
+#    query_params:
+#      metrics:
+#        - monthly_growth_pct_silver
+#        - revenue_mtd_cumulative_silver
+#        - revenue_mtd_cumulative_lag_silver
+#      group_by:
+#        - TimeDimension('metric_time', 'year')
+#        - TimeDimension('metric_time', 'month')
+#    exports:
+#      - name: fact_monthly_revenue_growth
+#        config:
+#          export_as: table
+#          schema: gold
  
