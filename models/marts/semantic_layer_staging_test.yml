@@ -78,11 +78,21 @@ models:
 # dbt sl query --metrics monthly_growth_pct_staging --group-by metric_time__year
 
 
+      - name: per_yearly_sum
+        type: derived
+        expr: prev_year_lag
+        input_metrics:
+          - name : sum_of_booking_amt_staging
+            alias: prev_year_lag
+            offset_window: 1 year  # lag
+
 saved_queries:
  
   - name: yearly_pct_cal
     query_params:
       metrics:
+        - sum_of_booking_amt_staging
+        - per_yearly_sum
         - yearly_growth_pct_staging
       group_by:
         - TimeDimension('metric_time', 'year')
