@@ -60,11 +60,6 @@ models:
           name: booking_status_staging
           type: categorical
 
-      - name: date_trunc('year',booking_date)
-        dimension:
-          name: year_booking_date
-          type: categorical
-
     metrics:
       - name: sum_of_booking_amt_staging
         type: simple
@@ -136,8 +131,7 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - TimeDimension('bookingid_staging__booking_date', 'year')
-        - Dimension('bookingid_staging__year_booking_date')
+        - TimeDimension('metric_time', 'year')
         #- Dimension('bookingid_staging__year_booking_date')
         #- Dimension('bookingid_staging__booking_status_staging')
     exports:
