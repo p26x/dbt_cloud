@@ -41,10 +41,10 @@ models:
         granularity: day
         dimension:
           type: time
-        config:
-          meta:
-            metricflow:
-              primary_time: true 
+        #config:
+        #  meta:
+        #    metricflow:
+        #      primary_time: true 
              
       - name: created_at
         granularity: day
@@ -130,9 +130,9 @@ saved_queries:
     query_params:
       metrics:
         - sum_of_booking_amt_staging
-        #- per_yearly_sum
-        #- yearly_growth_pct_staging
-        #- avg_of_booking_amt_staging
+        - per_yearly_sum
+        - yearly_growth_pct_staging
+        - avg_of_booking_amt_staging
       group_by:
         - TimeDimension('metric_time', 'year')
         #- Dimension('bookingid_staging__booking_date_year')
