@@ -7,6 +7,7 @@ models:
       schema: bronze
       docs:
         node_color: "#000000"  # it will generate the docs on the color we specified
+      access: public
       
 
 
@@ -67,16 +68,22 @@ models:
         type: simple
         agg: sum
         expr: booking_amount
+        config:
+          enabled: true
 
       - name: avg_of_booking_amt_staging
         type: simple
         agg: average
         expr: booking_amount
+        config:
+          enabled: true
       
       - name: day_wise_cummilative_count
         type: cumulative
         input_metric: sum_of_booking_amt_staging
         grain_to_date: day
+        config:
+          enabled: true
 
 # dbt sl query --metrics day_wise_cummilative_count --group-by metric_time__day
        
@@ -84,6 +91,8 @@ models:
         type: cumulative
         input_metric: sum_of_booking_amt_staging
         grain_to_date: year
+        config:
+          enabled: true
 
 # dbt sl query --metrics revenue_mtd_cumulative_staging --group-by metric_time__month
 
@@ -92,6 +101,8 @@ models:
       - name: yearly_growth_pct_staging
         type: derived
         expr: ((coalesce(current_year,0) - coalesce(prev_year,0) )/ nullif(prev_year,0)) * 100
+        config:
+          enabled: true
         input_metrics:
           - name : sum_of_booking_amt_staging
             alias: current_year
@@ -106,6 +117,8 @@ models:
       - name: per_yearly_sum
         type: derived
         expr: prev_year_lag
+        config:
+          enabled: true
         input_metrics:
           - name : sum_of_booking_amt_staging
             alias: prev_year_lag
