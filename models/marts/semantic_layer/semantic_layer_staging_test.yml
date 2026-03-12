@@ -44,10 +44,9 @@ models:
           type: time
       
       - name: date_trunc('year', booking_date)
-        granularity: year
         dimension:
           name: booking_year_clean
-          type: time
+          type: categorical
           
  
       - name: booking_status
@@ -116,8 +115,24 @@ models:
             alias: prev_year_lag
             offset_window: 1 year  # lag
 
+
 saved_queries:
- 
+
+  # ── Simple metrics only (no offset) - safe for Tableau ──
+  - name: yearly_simple_metrics
+    query_params:
+      metrics:
+        - sum_of_booking_amt_staging
+        - avg_of_booking_amt_staging
+      group_by:
+        - "TimeDimension('metric_time', 'year')"
+    exports:
+      - name: yearly_simple_table
+        config:
+          export_as: table
+          schema: staging
+
+  # ── Offset metrics - use via CLI or Snowflake table directly ──
   - name: yearly_pct_cal
     query_params:
       metrics:
@@ -126,12 +141,29 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - TimeDimension('bookingid_staging__booking_date', 'year')
-        #- "TimeDimension('metric_time', 'year')"
-        #- Dimension('bookingid_staging__year_booking_date')
-        #- Dimension('bookingid_staging__booking_status_staging')
+        - "TimeDimension('metric_time', 'year')"
     exports:
       - name: yearly_pct_growth_table
         config:
           export_as: table
-          schema: gold
+          schema: staging
+
+#saved_queries:
+ 
+#  - name: yearly_pct_cal
+#    query_params:
+#      metrics:
+#        - sum_of_booking_amt_staging
+#        - per_yearly_sum
+#        - yearly_growth_pct_staging
+#        - avg_of_booking_amt_staging
+#      group_by:
+#        - TimeDimension('bookingid_staging__booking_date', 'year')
+#        #- "TimeDimension('metric_time', 'year')"
+#        #- Dimension('bookingid_staging__year_booking_date')
+#        #- Dimension('bookingid_staging__booking_status_staging')
+#    exports:
+#      - name: yearly_pct_growth_table
+#        config:
+#          export_as: table
+#          schema: gold
