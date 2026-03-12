@@ -101,7 +101,6 @@ saved_queries:
         - yearly_growth_pct_staging
       group_by:
         - TimeDimension('metric_time', 'year')
-        - Dimension('bookingid_staging__booking_date_year_silver')
     exports:
       - name: yearly_pct_growth_table
         config:
