@@ -41,10 +41,11 @@ models:
         granularity: day
         dimension:
           type: time
-        #config:
-        #  meta:
-        #    metricflow:
-        #      primary_time: true 
+        config:
+          meta:
+            metricflow:
+              #primary_time: true
+              primary: true 
              
       - name: created_at
         granularity: day
