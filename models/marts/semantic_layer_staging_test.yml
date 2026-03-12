@@ -1,0 +1,50 @@
+version: 2
+ 
+models:
+  - name: staging_booking
+    config:
+      materialized: view
+      schema: staging
+
+    semantic_model:
+      enabled: true
+    agg_time_dimension: booking_date
+   
+    columns:
+      - name : booking_id
+        entity:
+          name: bookingid_staging
+          type: primary
+      - name: booking_lisitng_id
+        entity:
+          name: listingid_staging    
+          type: foreign
+
+      - name: booking_date 
+        granularity: day
+        dimension:
+          name: booking_date_staging
+          type: time
+        config:
+          meta:
+            metricflow:
+              primary_time: true    
+             
+      - name: booking_created_at
+        granularity: day
+        dimension:
+          name: booking_created_at_staging
+          type: time
+ 
+      - name: booking_status
+        dimension:
+          name: booking_status_staging
+          type: categorical
+
+
+    metrics:
+#Simple Metrics
+      - name: sum_of_booking_amount_staging
+        type: simple
+        agg: sum
+        expr: booking_amount
