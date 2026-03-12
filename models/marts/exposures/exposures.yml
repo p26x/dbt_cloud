@@ -1,0 +1,21 @@
+version: 2
+
+exposures:
+  - name: yearly_growth_dashboard
+    label: "Yearly Growth Report"
+    type: dashboard
+    maturity: high
+    url: https://your-bi-tool-link.com/growth  # Link to your actual dashboard
+    description: "Tracks the yearly booking amount and growth percentage"
+    
+    owner:
+      name: "Test"
+      email: test@email.com
+
+    depends_on:
+      #- source('gsheets', 'goals')
+      - metric('sum_of_booking_amt_staging')
+      - metric('per_yearly_sum','yearly_growth_pct_staging','avg_of_booking_amt_staging')
+      #- ref('yearly_pct_growth_table') # Tells dbt this dashboard uses your table
+      - source('staging','yearly_pct_growth_table')
+      - ref('bronze_bookings')

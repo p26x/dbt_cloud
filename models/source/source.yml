@@ -11,3 +11,5 @@ sources:
         description : staging hosts details
       - name: listings
         description : staging listings details
+      - name: yearly_pct_growth_table
+
