@@ -40,12 +40,13 @@ models:
       - name: booking_date  
         granularity: day
         dimension:
+          name: booking_date
           type: time
         config:
           meta:
             metricflow:
-              #primary_time: true
-              primary: true 
+              primary_time: true
+              #primary: true 
              
       - name: created_at
         granularity: day
@@ -53,14 +54,15 @@ models:
           name: booking_created_at_staging
           type: time
 
-      - name: extract(year from booking_date)
-        dimension:
-          name: booking_date_year
-          type: categorical
  
       - name: booking_status
         dimension:
           name: booking_status_staging
+          type: categorical
+
+      - name: to_char(booking_date,'YYYY')
+        dimension:
+          name: year_booking_date
           type: categorical
 
 
@@ -135,8 +137,9 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - TimeDimension('metric_time', 'year')
-        #- Dimension('bookingid_staging__booking_date_year')
+        - TimeDimension('bookingid_staging__booking_date', 'year')
+        - Dimension('bookingid_staging__year_booking_date')
+        #- Dimension('bookingid_staging__year_booking_date')
         #- Dimension('bookingid_staging__booking_status_staging')
     exports:
       - name: yearly_pct_growth_table
