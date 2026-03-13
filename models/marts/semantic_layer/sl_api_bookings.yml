@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: bronze_bookings
+    description: "Semantic layer for bronze_bookings"
+    config:
+      access: public
+      meta:
+        owner: gautham25.8@gmail.com
+
+    semantic_model:
+      enabled: true
+      config:
+        meta:
+          owner: gautham25.8@gmail.com
+
+    agg_time_dimension: booking_date
+
+    columns:
+      - name: booking_id
+        entity:
+          name: bookingid
+          type: primary
+
+      - name: booking_status
+        dimension:
+          name: status
+          type: categorical
+
+      - name: booking_date
+        granularity: day
+        dimension:
+          type: time
+        config:
+          meta:
+            metricflow:
+              primary_time: true
+
+    metrics:
+      - name: total_booking_count
+        label: "Total Booking Count"
+        description: "Distinct count of booking_id"
+        type: simple
+        agg: count_distinct
+        expr: bookingid
+        config:
+          enabled: true
+          meta:
+            owner: gautham25.8@gmail.com
