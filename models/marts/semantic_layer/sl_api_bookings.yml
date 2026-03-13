@@ -42,7 +42,7 @@ models:
         description: "Distinct count of booking_id"
         type: simple
         agg: count_distinct
-        expr: bookingid
+        expr: booking_id
         config:
           enabled: true
           meta:
