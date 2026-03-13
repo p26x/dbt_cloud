@@ -4,7 +4,7 @@ models:
   - name: bronze_bookings
     config:
       materialized: view
-      schema: bronze
+      schema: staging
       docs:
         node_color: "#000000"  # it will generate the docs on the color we specified
       access: public
