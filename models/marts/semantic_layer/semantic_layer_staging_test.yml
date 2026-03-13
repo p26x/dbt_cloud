@@ -3,7 +3,7 @@ version: 2
 models:
   - name: bronze_bookings
     config:
-      materialized: table
+      materialized: view
       schema: bronze
       docs:
         node_color: "#000000"  # it will generate the docs on the color we specified
