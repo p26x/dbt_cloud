@@ -1,7 +1,7 @@
 version: 2
  
 models:
-  - name: bronze_bookings
+  - name: staging_booking
     config:
       materialized: view
       schema: staging
@@ -54,12 +54,12 @@ models:
           name: booking_created_at_staging
           type: time
       
-      - name: Y
+      - name: booking_year
         dimension:
           name: booking_year
           type: categorical
 
-      - name: M
+      - name: booking_month
         dimension:
           name: booking_month
           type: categorical
@@ -141,8 +141,8 @@ saved_queries:
         - sum_of_booking_amt_staging
         - avg_of_booking_amt_staging
       group_by:
-        - "TimeDimension('metric_time', 'year')"
-        - "Dimension('bookingid_staging__booking_year')"
+        - TimeDimension('metric_time', 'year')
+        - Dimension('bookingid_staging__booking_year')
     exports:
       - name: yearly_simple_table
         config:
@@ -158,8 +158,7 @@ saved_queries:
         - yearly_growth_pct_staging
         - avg_of_booking_amt_staging
       group_by:
-        - "TimeDimension('metric_time', 'year')"
-        - "Dimension('bookingid_staging__booking_year')"
+        - TimeDimension('metric_time', 'year')
     exports:
       - name: yearly_pct_growth_table
         config:
