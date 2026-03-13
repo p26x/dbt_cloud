@@ -1,14 +1,1 @@
-saved_queries:
- 
-  - name: yearly_booking_amount
-    query_params:
-      metrics:
-        - sum_of_booking_amt
-      group_by:
-        - "Dimension('bookingid__booking_status')"
-        - "Dimension('bookingid__booking_date_year')"
-    exports:
-      - name: yearly_booking_amount
-        config:
-          export_as: table
-          schema: gold
+
