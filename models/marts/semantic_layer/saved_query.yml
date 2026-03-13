@@ -1,0 +1,34 @@
+saved_queries:
+ 
+  - name: yearly_booking_amount
+    config:
+      cache: 
+        enabled: true  # Keeps the query "warm" for speed
+        
+    query_params:
+      metrics:
+        - sum_of_booking_amt
+      group_by:
+        - "Dimension('bookingid__booking_status')"
+        - "TimeDimension('metric_time','year')"
+    exports:
+      - name: yearly_booking_amount 
+        config:
+          export_as: table  # Physically creates the table in your DB (table | view) 
+          schema: gold
+
+
+#cache: true is managed by dbt. If the cache expires or is cleared, it re-calculates.
+#export creates a permanent table in your schema. It stays there until the next time you explicitly run the export job to refresh it.
+
+#You are exactly right. That is the core logic of how dbt optimizes your Snowflake compute costs and query speed.
+
+#To be precise, dbt uses a "Smart Invalidation" logic. It won't just run the query because it's scheduled; it checks if it needs to run.
+
+#How the "Only Run if Changed" Logic Works
+#Metadata Check: When a request for the saved query comes in, the dbt Semantic Layer checks the last modified timestamp of the upstream Snowflake tables (your models/sources).
+
+#The "If" Statement:
+#If Data has NOT changed: It pulls the results directly from the Export Table or Cache. This uses virtually zero compute (or minimal "cloud services" cost in Snowflake).
+#If Data HAS changed: dbt recognizes the export is "stale." Only then does it spin up a Snowflake warehouse, run the heavy aggregation logic, and overwrite the Export Table with the new data.
+#Result: Your users always see the most "ready" version of the data without you paying for the same calculation twice.

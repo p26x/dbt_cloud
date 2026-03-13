@@ -5,3 +5,97 @@ models:
     description: "hosts dimensions and metrics"
     config:
       access: private #protected
+ 
+    # The semantic model lives right here inside the model entry
+    semantic_model:
+      enabled: true
+    agg_time_dimension: host_created_at
+   
+    columns:
+    #Entities
+      - name : host_id
+        entity:
+          name: hostid
+          type: primary
+
+#Time Dimensions
+#Note: You cant add cast or date convertions in new semantic layer you should add it in sql model itself
+      - name: host_created_at  
+        granularity: day
+        dimension:
+          type: time
+        config:
+          meta:
+            metricflow:
+#this is the configuration we are telling the model to use as primary time, in group by we are using
+#group-by --booking_date__year instead of this we can use group-by --metric_time__year
+              primary_time: true    
+             
+      - name: host_since
+        granularity: day
+        dimension:
+          type: time
+ 
+#Categorical
+#Note: Case also we cant define in directly in dimension it should define in model level
+      - name: is_superhost
+        dimension:
+          type: categorical
+
+      - name: response_rate_quality
+        dimension:
+          type: categorical
+
+    metrics:
+#Simple Metrics
+      - name: count_of_hosts
+        type: simple
+        agg: count_distinct
+        expr: host_id
+        config:
+          enabled: true
+
+
+      - name: count_of_very_good_hosts
+        type: simple
+        agg: count
+        expr: host_id
+        filter: |
+         {{ Dimension('hostid__response_rate_quality') }} ='VERY GOOD'
+        config:
+          enabled: true
+
+
+      - name: count_of_fair_hosts
+        type: simple
+        agg: count
+        expr: host_id
+        filter: |
+         {{ Dimension('hostid__response_rate_quality') }} ='FAIR'
+        config:
+          enabled: true
+
+
+      - name: count_of_good_hosts
+        type: simple
+        agg: count
+        expr: host_id
+        filter: |
+         {{ Dimension('hostid__response_rate_quality') }} ='GOOD'
+        config:
+          enabled: true
+
+# Left outer join to sl_fact_booking to get hosts with 0 count 
+# dbt sl query --metrics bookings_per_host_inclusive --group-by hostid --where "{{ Metric('bookings_per_host_inclusive',group_by=['hostid']) }} =0"
+
+      - name: bookings_per_host_inclusive
+        type: derived
+        expr: coalesce(cnt_of_bkm_amt,0)
+        input_metrics:
+          - name: count_of_booking_id_against_host
+            alias: cnt_of_bkm_amt
+          - name: count_of_hosts  # We need a metric on the Host side to force the join to start from the Host table.
+        config:
+          enabled: true
+
+
