@@ -1,0 +1,331 @@
+version: 2
+ 
+models:
+  - name: silver_bookings
+    description: "Consolidated model property file"
+    config:
+      materialized: table
+      schema: silver
+ 
+    semantic_model:
+      enabled: true
+    agg_time_dimension: booking_date_silver
+   
+    columns:
+      - name : booking_id
+        entity:
+          name: bookingid_silver
+          type: primary
+      - name: booking_lisitng_id
+        entity:
+          name: listingid_silver    
+          type: foreign
+
+      - name: booking_date 
+        granularity: day
+        dimension:
+          name: booking_date_silver
+          type: time
+        config:
+          meta:
+            metricflow:
+              primary_time: true    
+             
+      - name: booking_created_at
+        granularity: day
+        dimension:
+          name: booking_created_at_silver
+          type: time
+ 
+      - name: extract(year from booking_date)
+        dimension:
+          name: booking_date_year_silver
+          type: categorical
+ 
+      - name: extract(month from booking_date)
+        dimension:
+          name: booking_date_month_silver
+          type: categorical
+ 
+ 
+      - name: extract(day from booking_date)
+        dimension:
+          name: booking_date_day_silver
+          type: categorical
+ 
+      - name: booking_status
+        dimension:
+          name: booking_status_silver
+          type: categorical
+
+ 
+    metrics:
+#Simple Metrics
+      - name: sum_of_booking_amount_silver
+        type: simple
+        agg: sum
+        expr: booking_amount
+ 
+      - name: count_of_bookings_silver
+        type: simple
+        agg: count
+        expr: booking_amount
+ 
+ 
+      - name: distinct_count_of_bookings_silver
+        type: simple
+        agg: count_distinct
+        expr: booking_id
+ 
+      - name: booking_rate
+        type: ratio
+        numerator: sum_of_booking_amount_silver
+        denominator: count_of_bookings_silver
+ 
+      - name: revenue_p95
+        type: simple
+        agg: percentile
+        expr: booking_amount_silver
+        percentile: 0.95            # 0.95 percent, it will give the booking amount from 1 to 95, Bookings 96, 97, 98, 99, and 100: These people paid more than $3,192. The very last person (the 100th) might have paid $10,000!
+        percentile_type: discrete   # discrite: will give round off value
+     
+      # to get top 5 sum of discrite we need to write saved query booking > revenue_p95
+     
+      # For this we need to write saved query to tell group by
+      - name: d7_booking_change_silver
+        type: derived
+        expr: current_bookings - bookings_7_days_ago
+        input_metrics:
+          - name: sum_of_booking_amount_silver
+            alias: current_bookings
+          - name: sum_of_booking_amount_silver
+            offset_window: 7 days
+            alias: bookings_7_days_ago
+      # to get running sum EG: feb 1= 100, feb 2 = 150(50+100), feb 3 =250 (100+150)
+      - name: revenue_mtd_cumulative_silver
+        type: cumulative
+        input_metric: sum_of_booking_amount_silver
+        #window: 30 days
+        grain_to_date: month
+        #period_agg: last
+ 
+      - name: yearly_booking_amount_silver
+        type: cumulative
+        input_metric: sum_of_booking_amount_silver
+        grain_to_date: year
+ 
+      - name: quater_booking_amount_silver
+        type: cumulative
+        input_metric: sum_of_booking_amount_silver
+        grain_to_date: quarter
+ 
+      - name: weekly_booking_amount_silver
+        type: cumulative
+        input_metric: sum_of_booking_amount_silver
+        grain_to_date: week
+ 
+      - name: day_booking_amount_silver
+        type: cumulative
+        input_metric: sum_of_booking_amount_silver
+        grain_to_date: day
+ 
+#lag
+      - name: revenue_mtd_cumulative_lag_silver
+        type: derived
+        expr: month_lag
+        input_metrics:
+          - name : revenue_mtd_cumulative_silver
+            alias: month_lag
+            offset_window: 1 month  # lag
+ 
+ 
+ 
+      - name: monthly_growth_pct_silver
+        type: derived
+        expr: ((current_month - prev_month )/ prev_month) * 100
+        input_metrics:
+          - name : revenue_mtd_cumulative_silver
+            alias: current_month
+ 
+          - name : revenue_mtd_cumulative_silver
+            alias: prev_month
+            offset_window: 1 month  # lag
+ 
+# 2nd model
+
+ 
+  - name: silver_listings
+    description: "Consolidated model property file"
+    config:
+      materialized: table
+      schema: silver
+ 
+    # The semantic model lives right here inside the model entry
+    semantic_model:
+      enabled: true
+    agg_time_dimension: listing_created_at_silver
+   
+    columns:
+    #Entities
+      - name : listing_id
+        entity:
+          name: listingid_silver          
+          type: primary
+      - name: lisitng_host_id
+        entity:
+          name: listinghostid_silver
+          type: foreign
+    #Time Dimensions
+      - name: listing_created_at
+        granularity: day
+        dimension:
+          name: listing_created_at_silver
+          type: time
+     
+    #Categorical
+      - name: property_type
+        dimension:
+          name: property_type_silver
+          type: categorical
+ 
+      - name: room_type
+        dimension:
+          name: room_type_silver
+          type: categorical
+ 
+      - name: city
+        dimension:
+          name: city_silver
+          type: categorical
+ 
+      - name: country
+        dimension:
+          name: country_silver
+          type: categorical
+ 
+      - name: price_rateing
+        dimension:
+          name: price_rating_silver
+          type: categorical
+
+    metrics:
+#Simple Metrics
+      - name: count_of_listings_silver
+        type: simple
+        agg: count
+        expr: listing_id
+ 
+      - name: count_of_listings_apartment_silver
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Dimension('listingid_silver__property_type_silver') }} ='Apartment'
+
+      - name: count_of_listings_apartment_in_specific_city_silver
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Dimension('listingid_silver__property_type_silver') }} ='Apartment'
+         AND {{ Dimension('listingid_silver__city_silver') }} LIKE '%Jamesview%'
+ 
+      - name: count_of_listings_apartment_in_specific_city_year_silver
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Dimension('listingid_silver__property_type_silver') }} ='Apartment'
+         and {{ Dimension('listingid_silver__property_type_silver') }} is not null
+         and {{ TimeDimension('listingid_silver__listing_created_at_silver', 'month') }} >= '1999-01-01'
+      #and {{ TimeDimension('listingid__listing_created_at', 'day') }} >= '1999-01-01'
+
+      - name: count_of_listings_apartment_in_specific_id_silver
+        type: simple
+        agg: count
+        expr: listing_id
+        filter: |
+         {{ Entity('listingid_silver') }} =28
+         and {{ Entity('listinghostid_silver')}} =186
+ 
+      - name: count_of_listings_apartment_group_silver
+        type: derived
+        expr: lisitng_id_cnt_silver
+        input_metrics:
+          - name : count_of_listings_silver
+            alias: lisitng_id_cnt_silver
+        filter: |
+          {{ Metric('count_of_bookings_silver', group_by=['listingid_silver']) }} > 15
+ 
+ 
+      - name: avg_booking_amt_per_listing_inside_silver
+        description: average booking aount per lisitng
+        type: derived
+        expr: sum_of_total_booking_amt_inside / total_listings_inside
+        input_metrics:
+          - name: sum_of_booking_amount_silver
+            alias: sum_of_total_booking_amt_inside
+          - name: count_of_listings_silver
+            alias: total_listings_inside
+
+#Parent Metrics
+
+metrics:
+  - name: avg_booking_amt_per_listing_silver
+    description: average booking aount per lisitng
+    type: derived
+    label: avg booking amt per listing
+    expr: sum_of_total_booking_amt / total_listings
+    input_metrics:
+      - name: sum_of_booking_amount_silver
+        alias: sum_of_total_booking_amt
+      - name: count_of_listings_silver
+        alias: total_listings
+
+
+#saved_queries:
+ 
+#  - name: current_day_orders
+#    query_params:
+#      metrics:
+#        - sum_of_booking_amount_silver
+#      group_by:
+#        - "Dimension('booking_id__booking_status_silver')"
+#      #where:
+#        #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} = now()"
+#        #- "{{ TimeDimension('bookingid_silver__booking_date_silver','DAY') }} <= current_date()"  #current_timestamp - interval '1 week'
+#    exports:
+#      - name: current_day_orders
+#        config:
+#          export_as: table
+#          schema: gold
+
+#  - name: current_year_orders
+#    query_params:
+#      metrics:
+#        - sum_of_booking_amount_silver
+#      group_by:
+#        - "Dimension('bookingid_silver__booking_status_silver')"
+#      #where:
+#      #  - "{{ TimeDimension('bookingid_silver__booking_date_silver','YEAR') }} <= current_year()"
+#    exports:
+#      - name: current_year_orders
+#        config:
+#          export_as: table
+#          schema: gold
+
+#  - name: mon_on_mon_pct
+#    query_params:
+#      metrics:
+#        - monthly_growth_pct_silver
+#        - revenue_mtd_cumulative_silver
+#        - revenue_mtd_cumulative_lag_silver
+#      group_by:
+#        - TimeDimension('metric_time', 'year')
+#        - TimeDimension('metric_time', 'month')
+#    exports:
+#      - name: fact_monthly_revenue_growth
+#        config:
+#          export_as: table
+#          schema: gold
+ 
