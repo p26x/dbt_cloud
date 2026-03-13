@@ -47,7 +47,13 @@ models:
             metricflow:
               primary_time: true
               #primary: true 
-             
+
+
+      - name: extract(year from booking_date)  
+        dimension:
+          name: booking_date_year
+          type: categorical   
+
       - name: created_at
         granularity: day
         dimension:
@@ -58,6 +64,7 @@ models:
         dimension:
           name: booking_year
           type: categorical
+
 
       - name: booking_month
         dimension:
@@ -159,8 +166,11 @@ saved_queries:
         - avg_of_booking_amt_staging
       group_by:
         - TimeDimension('metric_time', 'year')
+        - Dimension('bookingid_staging__booking_year')
+      where:
+        - "{{Metric('sum_of_booking_amt_staging', group_by=['bookingid_staging__booking_year'])}} is not null"
     exports:
-      - name: yearly_pct_growth_table
+      - name: yearly_pct_growth_table 
         config:
           export_as: table
           schema: gold
@@ -184,3 +194,4 @@ saved_queries:
 #        config:
 #          export_as: table
 #          schema: gold
+
