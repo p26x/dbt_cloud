@@ -54,9 +54,14 @@ models:
           name: booking_created_at_staging
           type: time
       
-      - name: date_trunc('year', booking_date)
+      - name: Y
         dimension:
-          name: booking_year_clean
+          name: booking_year
+          type: categorical
+
+      - name: M
+        dimension:
+          name: booking_month
           type: categorical
           
  
@@ -137,11 +142,12 @@ saved_queries:
         - avg_of_booking_amt_staging
       group_by:
         - "TimeDimension('metric_time', 'year')"
+        - "Dimension('bookingid_staging__booking_year')"
     exports:
       - name: yearly_simple_table
         config:
           export_as: table
-          schema: staging
+          schema: gold
 
   # ── Offset metrics - use via CLI or Snowflake table directly ──
   - name: yearly_pct_cal
@@ -153,11 +159,12 @@ saved_queries:
         - avg_of_booking_amt_staging
       group_by:
         - "TimeDimension('metric_time', 'year')"
+        - "Dimension('bookingid_staging__booking_year')"
     exports:
       - name: yearly_pct_growth_table
         config:
           export_as: table
-          schema: staging
+          schema: gold
 
 #saved_queries:
  
