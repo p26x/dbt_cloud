@@ -166,9 +166,9 @@ saved_queries:
         - avg_of_booking_amt_staging
       group_by:
         - TimeDimension('metric_time', 'year')
-        - Dimension('bookingid_staging__booking_year')
-      where:
-        - "{{ Metric('sum_of_booking_amt_staging', group_by=['bookingid_staging']) }} is not null"
+      #  - Dimension('bookingid_staging__booking_year')
+      #where:
+      #  - "{{ Metric('sum_of_booking_amt_staging', group_by=['bookingid_staging']) }} is not null"
     exports:
       - name: yearly_pct_growth_table 
         config:
