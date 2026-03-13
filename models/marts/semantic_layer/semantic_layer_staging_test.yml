@@ -159,11 +159,7 @@ saved_queries:
   # ── Offset metrics - use via CLI or Snowflake table directly ──
   - name: yearly_pct_cal
     query_params:
-      metrics:
-        - sum_of_booking_amt_staging
-        - per_yearly_sum
-        - yearly_growth_pct_staging
-        - avg_of_booking_amt_staging
+      metrics: [sum_of_booking_amt_staging,per_yearly_sum,yearly_growth_pct_staging,avg_of_booking_amt_staging]
       group_by:
         - TimeDimension('metric_time', 'year')
       #  - Dimension('bookingid_staging__booking_year')
