@@ -162,7 +162,7 @@ saved_queries:
       metrics: [sum_of_booking_amt_staging,per_yearly_sum,yearly_growth_pct_staging,avg_of_booking_amt_staging]
       group_by:
         - TimeDimension('metric_time', 'year')
-        - Dimension('bookingid_staging__booking_year')
+        - Dimension('bookingid_staging__booking_date_year')
       #where:
       #  - "{{ Metric('sum_of_booking_amt_staging', group_by=['bookingid_staging']) }} is not null"
     exports:
