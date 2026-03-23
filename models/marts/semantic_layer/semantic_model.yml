@@ -214,6 +214,7 @@ models:
         type: simple
         agg: count
         expr: listing_id
+
  
       - name: count_of_listings_apartment_silver
         type: simple
@@ -269,7 +270,6 @@ models:
             alias: total_listings_inside
 
 #Parent Metrics
-
 metrics:
   - name: avg_booking_amt_per_listing_silver
     description: average booking aount per lisitng
