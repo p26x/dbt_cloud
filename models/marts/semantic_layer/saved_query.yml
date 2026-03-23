@@ -4,7 +4,7 @@ saved_queries:
     config:
       cache: 
         enabled: true  # Keeps the query "warm" for speed
-        
+        ttl_seconds: 3600 # Results stay "fresh" for 1 hour
     query_params:
       metrics:
         - sum_of_booking_amt
