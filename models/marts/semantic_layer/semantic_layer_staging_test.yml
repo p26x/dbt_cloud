@@ -13,8 +13,11 @@ models:
 
     semantic_model:
       enabled: true
+      name: staging_booking_semantic_model  # we can rename a semantic model
     agg_time_dimension: booking_date
-   
+    # if this is not defined as primary key in backend you have have it virtually in dbt
+    # this only should use when there is no primary entity
+    #primary_entity: booking_id 
     columns:
       - name: BOOKING_AMOUNT
         tests:
@@ -59,6 +62,12 @@ models:
         dimension:
           name: booking_created_at_staging
           type: time
+
+      - name: created_at
+        granularity: hour
+        dimension:
+          name: booking_created_at_staging_hour
+          type: time
       
       - name: booking_year
         dimension:
@@ -70,12 +79,28 @@ models:
         dimension:
           name: booking_month
           type: categorical
-          
- 
-      - name: booking_status
-        dimension:
-          name: booking_status_staging
-          type: categorical
+
+    derived_semantics:
+      entities:
+        #- name: booking_created_at 
+        #  type: unique  # using this date we can join other tables
+        #  expr: booking_created_at_staging 
+  
+        - name: booking_id_substr
+          type: foreign  
+          expr: "substring(bookingid_staging from 3)" 
+
+        - name: booking_id_concat
+          type: foreign 
+          expr: "'pri-'||'|'|| bookingid_staging"
+
+      dimensions:
+        - name: booking_status_categorical
+          type: categorical  
+          expr: "case when booking_amount > 1000 then 'Valid' else 'No Valid' end"
+          config:
+            meta:
+              usage: "marking where ever booking amount is greated then 1000 as valid else not valid"
 
     metrics:
       - name: sum_of_booking_amt_staging
@@ -85,6 +110,14 @@ models:
         config:
           enabled: true
 
+      - name: sum_of_booking_amt_staging_hour
+        type: simple
+        agg: sum
+        expr: booking_amount
+        agg_time_dimension: booking_created_at_staging_hour #override to use created_ar as the time dimension
+        config:
+          enabled: true
+          
       - name: avg_of_booking_amt_staging
         type: simple
         agg: average
@@ -130,13 +163,14 @@ models:
 
       - name: per_yearly_sum
         type: derived
-        expr: prev_year_lag
+        expr: coalesce(prev_year_lag, 0)
         config:
           enabled: true
         input_metrics:
           - name : sum_of_booking_amt_staging
             alias: prev_year_lag
             offset_window: 1 year  # lag
+            #filter: "{{ Dimension('booking_date') }} >= '2023-01-01'"
 
 
 saved_queries:
@@ -148,7 +182,7 @@ saved_queries:
         - sum_of_booking_amt_staging
         - avg_of_booking_amt_staging
       group_by:
-        - TimeDimension('metric_time', 'year')
+        #- TimeDimension('metric_time', 'year')
         - Dimension('bookingid_staging__booking_date_year')
     exports:
       - name: yearly_simple_table
@@ -161,7 +195,7 @@ saved_queries:
     query_params:
       metrics: [sum_of_booking_amt_staging,per_yearly_sum,yearly_growth_pct_staging,avg_of_booking_amt_staging]
       group_by:
-        - TimeDimension('metric_time__year')
+        - TimeDimension('bookingid_staging__booking_date','year')
 
         #- Dimension('bookingid_staging__booking_date_year')
       #where:
